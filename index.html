@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy STEM School - Empowering Future Innovators</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Home | Easy Stem School</title>
+    <link rel="stylesheet" href="styles.css?v=15">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -13,17 +13,21 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <h2>Easy STEM School</h2>
+                <img src="logo" alt="Easy STEM School Logo" class="logo-image">
+                <a href="#home">Easy STEM School</a>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="#home" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#about" class="nav-link">About</a>
+                    <a href="#team" class="nav-link">Team</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#programs" class="nav-link">Programs</a>
+                    <a href="#services" class="nav-link">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#testimonials" class="nav-link">Testimonials</a>
                 </li>
                 <li class="nav-item">
                     <a href="#contact" class="nav-link">Contact</a>
@@ -39,117 +43,149 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1 class="hero-title">Empowering Future Innovators</h1>
-                <p class="hero-subtitle">Transform your child's potential with our cutting-edge STEM education programs designed for the digital age.</p>
-                <div class="hero-buttons">
-                    <a href="#programs" class="btn btn-primary">Explore Programs</a>
-                    <a href="#contact" class="btn btn-secondary">Get Started</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="hero-graphic">
-                    <i class="fas fa-rocket"></i>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <div class="section-header">
-                <h2>Why Choose Easy STEM School?</h2>
-                <p>We're committed to making STEM education accessible, engaging, and fun for every child.</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-lightbulb"></i>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>What Makes Us Different?</h1>
+                <p>We provide personalized STEM education that adapts to each student's unique learning style and pace. Our expert tutors create engaging, hands-on experiences that make complex concepts accessible and exciting.</p>
+                
+                <div class="hero-features">
+                    <div class="feature">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>Expert Tutors</h3>
+                        <p>Experienced educators with deep subject knowledge</p>
                     </div>
-                    <h3>Innovative Learning</h3>
-                    <p>Hands-on projects and real-world applications that spark creativity and critical thinking.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-users"></i>
+                    <div class="feature">
+                        <i class="fas fa-user-cog"></i>
+                        <h3>Fully Personalized</h3>
+                        <p>Tailored learning plans for each student</p>
                     </div>
-                    <h3>Expert Instructors</h3>
-                    <p>Learn from experienced educators and industry professionals passionate about STEM education.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-laptop-code"></i>
-                    </div>
-                    <h3>Modern Technology</h3>
-                    <p>Access to the latest tools, software, and equipment to prepare for future careers.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
+                    <div class="feature">
                         <i class="fas fa-heart"></i>
+                        <h3>Supportive & Encouraging</h3>
+                        <p>Positive environment that builds confidence</p>
                     </div>
-                    <h3>Personalized Approach</h3>
-                    <p>Tailored learning experiences that adapt to each student's unique interests and abilities.</p>
+                    <div class="feature">
+                        <i class="fas fa-comments"></i>
+                        <h3>Direct Communication</h3>
+                        <p>Regular updates on progress and achievements</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-star"></i>
+                        <h3>Deep Expertise</h3>
+                        <p>Specialized knowledge in STEM subjects</p>
+                    </div>
+                </div>
+                
+                <div class="hero-buttons">
+                    <a href="#team" class="btn btn-primary">Meet the Team</a>
+                    <a href="#services" class="btn btn-secondary">Our Services</a>
+                    <a href="#testimonials" class="btn btn-secondary">Success Stories</a>
+                    <a href="#contact" class="btn btn-primary">Contact Us</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Programs Section -->
-    <section id="programs" class="programs">
+    <!-- Team Section -->
+    <section id="team" class="team">
         <div class="container">
-            <div class="section-header">
-                <h2>Our Programs</h2>
-                <p>Comprehensive STEM education for all ages and skill levels</p>
+            <h2>Our Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-header">
+                        <div class="member-image">
+                            <img src="yakov-photo.jpg" alt="Yakov Prager - Physics and Maths Ph.D" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="member-image-fallback" style="display: none;">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                        </div>
+                        <div class="member-title">
+                            <h3>Sciences and Maths Guru</h3>
+                            <h4>Physics and Maths Ph.D</h4>
+                            <h5>Yakov Prager</h5>
+                        </div>
+                    </div>
+                    <div class="member-content">
+                        <p>Yakov holds a Ph.D. in Theoretical and Mathematical Physics with extensive math and physics teaching experience and background in computer science. Yakov's expertise includes:</p>
+                        <ul>
+                            <li><strong>Advanced Physics Knowledge:</strong> Extensive experience in theoretical research in the areas of quantum field theory and solid state physics; proficiency in classical and quantum mechanics, electromagnetism, and more</li>
+                            <li><strong>Mathematics Proficiency:</strong> Command of mathematics necessary for theoretical physics research, including calculus, real and complex analysis, ordinary and partial differential equations, group theory, etc.</li>
+                            <li><strong>Test Preparation:</strong> Preparing students for math and physics portions of standardized tests, including the SAT, ACT, APs, and other important assessments.</li>
+                            <li>Participation in the organizing committee of the math and physics competition for college students.</li>
+                            <li>Mentoring a regional team at the Young Physicists Tournament in Moscow and Israel: My student became the winner of the all-Israeli physics olympiad; and so on</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-header">
+                        <div class="member-image">
+                            <img src="faina-photo.jpg" alt="Faina Prager - Tech Lead" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="member-image-fallback" style="display: none;">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                        </div>
+                        <div class="member-title">
+                            <h3>Tech Lead</h3>
+                            <h5>Faina Prager</h5>
+                        </div>
+                    </div>
+                    <div class="member-content">
+                        <ul>
+                            <li><strong>Comprehensive Industry Experience:</strong> Over three decades of professional experience in the computer science industry, with deep understanding of real-world applications and challenges.</li>
+                            <li><strong>Advanced Teaching Skills:</strong> Former AP Computer Science instructor at Wellesley High School</li>
+                            <li><strong>Programming Languages Expertise:</strong> Proficient in Java, C++, and other major programming languages, with a thorough understanding of software development and engineering principles.</li>
+                            <li><strong>AP Computer Science Preparation:</strong> Specialized in tutoring students for AP Computer Science exams, ensuring they grasp key concepts and perform excellently in their assessments.</li>
+                            <li><strong>All Levels of Computer Science:</strong> Capable of teaching all aspects of computer science, from introductory courses to advanced topics, catering to the needs of beginners and experienced students alike.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="programs-grid">
-                <div class="program-card">
-                    <div class="program-icon">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h3>Robotics & AI</h3>
-                    <p>Build and program robots, explore artificial intelligence, and understand automation.</p>
-                    <ul class="program-features">
-                        <li>Hands-on robot building</li>
-                        <li>Programming fundamentals</li>
-                        <li>AI concepts introduction</li>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2>Our Services</h2>
+            <div class="services-grid">
+                <div class="service-category">
+                    <h3>Mathematics</h3>
+                    <ul>
+                        <li>Algebra</li>
+                        <li>Geometry</li>
+                        <li>Trigonometry</li>
+                        <li>PreCalculus</li>
+                        <li>AP Calculus AB/BC</li>
+                        <li>Multivariable Calculus</li>
+                        <li>IGCSE Math</li>
+                        <li>IB Maths - AA/AI - SL/HL</li>
+                        <li>Linear Algebra</li>
+                        <li>Test Preparation - math portion of SAT, ACT, ISEE, SSAT, PSAT, GRE and more</li>
                     </ul>
                 </div>
-                <div class="program-card">
-                    <div class="program-icon">
-                        <i class="fas fa-code"></i>
-                    </div>
-                    <h3>Coding & Development</h3>
-                    <p>Learn programming languages, web development, and software engineering principles.</p>
-                    <ul class="program-features">
-                        <li>Python, JavaScript, Scratch</li>
-                        <li>Web development projects</li>
-                        <li>Game development</li>
+                <div class="service-category">
+                    <h3>Physics</h3>
+                    <ul>
+                        <li>High-School Physics</li>
+                        <li>AP Physics 1</li>
+                        <li>AP Physics 2</li>
+                        <li>AP Physics C: Mechanics</li>
+                        <li>AP Physics C: Electricity and Magnetism</li>
+                        <li>IGCSE Physics</li>
+                        <li>IB Physics SL/HL</li>
                     </ul>
                 </div>
-                <div class="program-card">
-                    <div class="program-icon">
-                        <i class="fas fa-flask"></i>
-                    </div>
-                    <h3>Science & Engineering</h3>
-                    <p>Explore physics, chemistry, and engineering through exciting experiments and projects.</p>
-                    <ul class="program-features">
-                        <li>Laboratory experiments</li>
-                        <li>Engineering challenges</li>
-                        <li>Scientific method</li>
-                    </ul>
-                </div>
-                <div class="program-card">
-                    <div class="program-icon">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <h3>Mathematics & Logic</h3>
-                    <p>Master mathematical concepts through interactive problem-solving and logical thinking.</p>
-                    <ul class="program-features">
-                        <li>Problem-solving strategies</li>
-                        <li>Mathematical modeling</li>
-                        <li>Logic puzzles</li>
+                <div class="service-category">
+                    <h3>Computer Science</h3>
+                    <ul>
+                        <li>Introduction to Computer Science</li>
+                        <li>AP Computer Science Principles</li>
+                        <li>AP Computer Science A</li>
+                        <li>IGCSE Computer Science</li>
+                        <li>IB Computer Science SL/HL</li>
+                        <li>Java</li>
+                        <li>C++</li>
+                        <li>Python</li>
                     </ul>
                 </div>
             </div>
@@ -157,38 +193,44 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials">
+    <section id="testimonials" class="testimonials">
         <div class="container">
-            <div class="section-header">
-                <h2>What Parents & Students Say</h2>
-                <p>Real stories from our community</p>
-            </div>
+            <h2>Student Success Stories</h2>
             <div class="testimonials-grid">
-                <div class="testimonial-card">
+                <div class="testimonial">
                     <div class="testimonial-content">
-                        <p>"My daughter's confidence in math and science has grown tremendously since joining Easy STEM School. The hands-on approach makes learning fun!"</p>
+                        <p>"We're incredibly happy with Yakov's tutoring! I'm glad that we chose him as the tutor for our daughter, as he helped her improve and get much better grades on her tests. He gave my daughter personalized tutoring which helped her understand and fill in her gaps in both math and physics. Yakov is an excellent teacher who is not only amazing at teaching but is also a very positive person! Highly recommended!"</p>
                     </div>
                     <div class="testimonial-author">
-                        <h4>Sarah Johnson</h4>
-                        <span>Parent</span>
+                        <h4>Sergey R.</h4>
+                        <p>Parent</p>
                     </div>
                 </div>
-                <div class="testimonial-card">
+                <div class="testimonial">
                     <div class="testimonial-content">
-                        <p>"I love building robots and learning to code! The teachers here make everything so interesting and easy to understand."</p>
+                        <p>"I'm really impressed with the computer science and physics tutoring. My child has gotten so much personalized help—Faina and Yakov create a lesson plan just for him and is always ready to add extra hours when needed. They are super flexible with scheduling and always available to answer any questions, even between lessons. They both are passion about their subjects and are making computer science and physics understandable and fun, and they consistently go above and beyond to help my child succeed. Highly recommended."</p>
                     </div>
                     <div class="testimonial-author">
-                        <h4>Alex Chen</h4>
-                        <span>Student, Age 12</span>
+                        <h4>Boris V.</h4>
+                        <p>Parent</p>
                     </div>
                 </div>
-                <div class="testimonial-card">
+                <div class="testimonial">
                     <div class="testimonial-content">
-                        <p>"The personalized attention and modern curriculum have prepared my son for future success in technology and engineering."</p>
+                        <p>"Since starting private lessons with Yakov a little over a month ago, our high schooler was able to improve his SAT score by over 110 points and got the needed confidence to succeed with the test. Yakov is extremely knowledgeable, patient and thorough, and is not just teaching your kid math, but actually identifies the gaps in knowledge and fills them in. I would highly recommend Yakov's services to anyone needing it and consider ourselves extremely fortunate to have found such an amazing teacher."</p>
                     </div>
                     <div class="testimonial-author">
-                        <h4>Michael Rodriguez</h4>
-                        <span>Parent</span>
+                        <h4>Lena N.</h4>
+                        <p>Parent</p>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>"We're thrilled with the progress our daughters have made under Yakov's guidance in AP Calculus BC. He has a great ability to break down complex topics and make them accessible and engaging. Our girls feel much more confident in their understanding, and their grades reflect it. We highly recommend Yakov for anyone looking for a knowledgeable, patient, and dedicated tutor in math!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <h4>Amnon H.</h4>
+                        <p>Parent</p>
                     </div>
                 </div>
             </div>
@@ -198,59 +240,51 @@
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
+            <h2>Get In Touch</h2>
+            <p class="contact-subtitle">We're Here to Support You</p>
             <div class="contact-content">
-                <div class="contact-info">
-                    <h2>Ready to Start Your STEM Journey?</h2>
-                    <p>Join us in shaping the next generation of innovators, problem-solvers, and leaders.</p>
-                    <div class="contact-details">
-                        <div class="contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div>
-                                <h4>Location</h4>
-                                <p>123 Innovation Drive<br>Tech City, TC 12345</p>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-phone"></i>
-                            <div>
-                                <h4>Phone</h4>
-                                <p>(555) 123-4567</p>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <div>
-                                <h4>Email</h4>
-                                <p>info@easystemschool.com</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
-                            <input type="text" id="name" name="name" placeholder="Your Name" required>
+                            <input type="text" id="firstName" name="firstName" placeholder="First name" required>
                         </div>
                         <div class="form-group">
-                            <input type="email" id="email" name="email" placeholder="Your Email" required>
+                            <input type="text" id="lastName" name="lastName" placeholder="Last name" required>
                         </div>
                         <div class="form-group">
-                            <input type="tel" id="phone" name="phone" placeholder="Your Phone">
+                            <input type="email" id="email" name="email" placeholder="Email" required>
                         </div>
                         <div class="form-group">
-                            <select id="interest" name="interest" required>
-                                <option value="">Select Program Interest</option>
-                                <option value="robotics">Robotics & AI</option>
-                                <option value="coding">Coding & Development</option>
-                                <option value="science">Science & Engineering</option>
-                                <option value="math">Mathematics & Logic</option>
-                            </select>
+                            <input type="tel" id="phone" name="phone" placeholder="Phone" required>
                         </div>
                         <div class="form-group">
-                            <textarea id="message" name="message" placeholder="Tell us about your child's interests" rows="4"></textarea>
+                            <textarea id="message" name="message" placeholder="Tell us what you are looking for" rows="5" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Send Message</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
+                </div>
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>650-224-8014</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>easystemschool@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Location</h4>
+                            <p>Newton, MA</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -262,41 +296,27 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Easy STEM School</h3>
-                    <p>Empowering the next generation of innovators through quality STEM education.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                    </div>
+                    <p>Dedicated, thoughtful teaching that builds confidence and mastery.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#programs">Programs</a></li>
+                        <li><a href="#team">Team</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h4>Programs</h4>
-                    <ul>
-                        <li><a href="#programs">Robotics & AI</a></li>
-                        <li><a href="#programs">Coding & Development</a></li>
-                        <li><a href="#programs">Science & Engineering</a></li>
-                        <li><a href="#programs">Mathematics & Logic</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
                     <h4>Contact Info</h4>
-                    <p><i class="fas fa-map-marker-alt"></i> 123 Innovation Drive, Tech City, TC 12345</p>
-                    <p><i class="fas fa-phone"></i> (555) 123-4567</p>
-                    <p><i class="fas fa-envelope"></i> info@easystemschool.com</p>
+                    <p>650-224-8014</p>
+                    <p>easystemschool@gmail.com</p>
+                    <p>Newton, MA</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Easy STEM School. All rights reserved.</p>
+                <p>&copy; 2025 by Easy STEM School</p>
             </div>
         </div>
     </footer>
