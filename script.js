@@ -94,7 +94,7 @@ window.addEventListener('scroll', () => {
 // Contact form handling
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
+    contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         if (!validateForm(this)) {
@@ -108,13 +108,41 @@ if (contactForm) {
         submitButton.innerHTML = '<span class="loading"></span> Sending...';
         submitButton.disabled = true;
 
-        // Simulate form submission
-        setTimeout(() => {
-            this.reset();
-            showNotification('Thank you! Your message has been sent successfully.', 'success');
-            submitButton.textContent = originalText;
-            submitButton.disabled = false;
-        }, 2000);
+        // Get form data
+        const formData = new FormData(this);
+        const data = {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            message: formData.get('message')
+        };
+
+        // Send to API
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                this.reset();
+                showNotification('Thank you! Your message has been sent successfully.', 'success');
+            } else {
+                showNotification(result.message || 'Failed to send message. Please try again.', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Failed to send message. Please try again.', 'error');
+        }
+
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
     });
 }
 
