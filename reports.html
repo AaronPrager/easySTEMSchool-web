@@ -58,6 +58,21 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Quick Date Ranges</label>
+                        <div class="date-presets">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="setDateRange('lastWeek')">
+                                <i class="fas fa-calendar-week"></i> Last Week
+                            </button>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="setDateRange('lastMonth')">
+                                <i class="fas fa-calendar-alt"></i> Last Month
+                            </button>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="setDateRange('thisMonth')">
+                                <i class="fas fa-calendar"></i> This Month
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="studentFilter">Student</label>
                         <select id="studentFilter" name="studentFilter">
                             <option value="">All Students</option>

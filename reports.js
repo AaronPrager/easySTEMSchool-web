@@ -305,6 +305,49 @@ class ReportsManager {
         this.showReportResults(false);
         this.setDefaultDates();
     }
+
+    setDateRange(range) {
+        const today = new Date();
+        let startDate, endDate;
+
+        switch (range) {
+            case 'lastWeek':
+                // Last week (Monday to Sunday of previous week)
+                const lastWeekStart = new Date(today);
+                lastWeekStart.setDate(today.getDate() - today.getDay() - 6); // Previous Monday
+                const lastWeekEnd = new Date(lastWeekStart);
+                lastWeekEnd.setDate(lastWeekStart.getDate() + 6); // Previous Sunday
+                startDate = lastWeekStart;
+                endDate = lastWeekEnd;
+                break;
+
+            case 'lastMonth':
+                // Last month
+                const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+                startDate = lastMonthStart;
+                endDate = lastMonthEnd;
+                break;
+
+            case 'thisMonth':
+                // This month
+                const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                startDate = thisMonthStart;
+                endDate = thisMonthEnd;
+                break;
+
+            default:
+                return;
+        }
+
+        // Set the date inputs
+        document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+        document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+
+        // Auto-generate report
+        this.generateReport();
+    }
 }
 
 // Global functions for buttons
@@ -317,6 +360,12 @@ function generateReport() {
 function clearFilters() {
     if (window.reportsManager) {
         window.reportsManager.clearFilters();
+    }
+}
+
+function setDateRange(range) {
+    if (window.reportsManager) {
+        window.reportsManager.setDateRange(range);
     }
 }
 
