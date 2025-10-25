@@ -180,10 +180,19 @@ class StudentsManager {
         listItem.innerHTML = `
             <div class="student-info">
                 <h3 class="student-name">${student.student_first_name} ${student.student_last_name}</h3>
+                    <div class="student-details">
+                        <span class="student-grade">Grade ${student.student_grade}</span>
+                        <span class="student-subject">${student.subjects}</span>
+                        <span class="student-price">$${student.price_per_lesson || '0.00'}/lesson</span>
+                        <span class="student-package">$${student.ten_pack_price || '0.00'}/10-pack</span>
+                    </div>
             </div>
             <div class="student-actions">
                 <button class="btn btn-outline" onclick="window.studentsManager.viewStudent(${student.id})">
                     <i class="fas fa-eye"></i> View
+                </button>
+                <button class="btn btn-outline" onclick="window.studentsManager.editNotes(${student.id})">
+                    <i class="fas fa-sticky-note"></i> Notes
                 </button>
                 <button class="btn btn-primary" onclick="window.studentsManager.scheduleLessonForStudent(${student.id})">
                     <i class="fas fa-calendar-plus"></i> Schedule
@@ -403,57 +412,321 @@ class StudentsManager {
             return;
         }
         
-        const student = this.selectedStudent;
+        // Toggle edit mode
+        this.isEditMode = !this.isEditMode;
         
-        // Create edit modal HTML
-        const editModalHTML = `
-            <div id="editStudentModal" class="modal" style="display: flex;">
-                <div class="modal-content" style="max-width: 500px;">
-                    <div class="modal-header">
-                        <h3><i class="fas fa-edit"></i> Edit Student Information</h3>
-                        <button class="close-btn" onclick="closeEditStudentModal()">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editStudentForm">
-                            <div class="form-group">
-                                <label for="editPricePerLesson">Price per Lesson ($)</label>
-                                <input type="number" id="editPricePerLesson" name="price_per_lesson" 
-                                       value="${student.price_per_lesson || 0}" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="editTenPackPrice">10 Pack Price ($)</label>
-                                <input type="number" id="editTenPackPrice" name="ten_pack_price" 
-                                       value="${student.ten_pack_price || 0}" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="editNotes">Admin Notes</label>
-                                <textarea id="editNotes" name="notes" rows="4" 
-                                          placeholder="Add notes about this student...">${student.notes || ''}</textarea>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="closeEditStudentModal()">Cancel</button>
-                        <button class="btn btn-primary" onclick="saveStudentChanges()">
-                            <i class="fas fa-save"></i> Save Changes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Add modal to page
-        document.body.insertAdjacentHTML('beforeend', editModalHTML);
-        console.log('Edit modal added to page');
-        
-        // Verify modal was added
-        const modal = document.getElementById('editStudentModal');
-        console.log('Modal element:', modal);
-        if (modal) {
-            console.log('Modal display style:', modal.style.display);
+        if (this.isEditMode) {
+            this.showStudentModalEdit(this.selectedStudent);
+            this.updateEditButton(true);
+        } else {
+            this.showStudentModal(this.selectedStudent);
+            this.updateEditButton(false);
         }
     }
 
+    updateEditButton(isEditMode) {
+        const editBtn = document.getElementById('editBtn');
+        if (editBtn) {
+            if (isEditMode) {
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+                editBtn.className = 'btn btn-primary';
+                editBtn.onclick = () => this.saveStudentChanges();
+            } else {
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Student';
+                editBtn.className = 'btn btn-outline';
+                editBtn.onclick = () => this.editStudent();
+            }
+        }
+    }
+
+    showStudentModalEdit(student) {
+        const modal = document.getElementById('studentModal');
+        const modalBody = document.getElementById('modalBody');
+
+        const registrationDate = new Date(student.created_at);
+
+        modalBody.innerHTML = `
+            <div class="student-detail">
+                <form id="studentEditForm">
+                    <div class="detail-section">
+                        <h4><i class="fas fa-user-graduate"></i> Student Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>First Name:</label>
+                                <input type="text" name="student_first_name" value="${student.student_first_name}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Last Name:</label>
+                                <input type="text" name="student_last_name" value="${student.student_last_name}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Grade:</label>
+                                <input type="text" name="student_grade" value="${student.student_grade}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>School:</label>
+                                <input type="text" name="school_name" value="${student.school_name}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Date of Birth:</label>
+                                <input type="date" name="student_date_of_birth" value="${student.student_date_of_birth || ''}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Phone:</label>
+                                <input type="tel" name="student_phone" value="${student.student_phone}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Email:</label>
+                                <input type="email" name="student_email" value="${student.student_email || ''}" class="edit-field">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4><i class="fas fa-users"></i> Parent Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Parent Name:</label>
+                                <input type="text" name="parent_full_name" value="${student.parent_full_name}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Parent Email:</label>
+                                <input type="email" name="parent_email" value="${student.parent_email}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Parent Phone:</label>
+                                <input type="tel" name="parent_phone" value="${student.parent_phone}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Parent Address:</label>
+                                <input type="text" name="parent_address" value="${student.parent_address}" class="edit-field">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4><i class="fas fa-book"></i> Academic Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Subjects of Interest:</label>
+                                <input type="text" name="subjects" value="${student.subjects}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Specific Goals:</label>
+                                <input type="text" name="specific_goals" value="${student.specific_goals}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Learning Difficulties:</label>
+                                <input type="text" name="learning_difficulties" value="${student.learning_difficulties || ''}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Additional Comments:</label>
+                                <input type="text" name="additional_comments" value="${student.additional_comments || ''}" class="edit-field">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4><i class="fas fa-dollar-sign"></i> Pricing Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Price per Lesson:</label>
+                                <input type="number" name="price_per_lesson" value="${student.price_per_lesson || 0}" step="0.01" min="0" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>10 Pack Price:</label>
+                                <input type="number" name="ten_pack_price" value="${student.ten_pack_price || 0}" step="0.01" min="0" class="edit-field">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="detail-section">
+                        <h4><i class="fas fa-phone-alt"></i> Emergency Contact</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Emergency Contact:</label>
+                                <input type="text" name="emergency_name" value="${student.emergency_name || ''}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Relationship:</label>
+                                <input type="text" name="emergency_relationship" value="${student.emergency_relationship || ''}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Emergency Phone:</label>
+                                <input type="tel" name="emergency_phone" value="${student.emergency_phone || ''}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Emergency Email:</label>
+                                <input type="email" name="emergency_email" value="${student.emergency_email || ''}" class="edit-field">
+                            </div>
+                            <div class="detail-item">
+                                <label>Emergency Address:</label>
+                                <input type="text" name="emergency_address" value="${student.emergency_address || ''}" class="edit-field">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4><i class="fas fa-info-circle"></i> Registration Details</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Registration Date:</label>
+                                <span>${this.formatDate(registrationDate)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Liability Release:</label>
+                                <span class="status-badge ${student.liability_release == 1 ? 'approved' : 'pending'}">
+                                    ${student.liability_release == 1 ? 'Agreed' : 'Pending'}
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <label>How did you hear about us:</label>
+                                <input type="text" name="how_did_you_hear" value="${student.how_did_you_hear || ''}" class="edit-field">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+    }
+
+    async saveStudentChanges() {
+        if (!this.selectedStudent) return;
+        
+        const form = document.getElementById('studentEditForm');
+        const formData = new FormData(form);
+        
+        const updateData = {};
+        
+        // Collect all form data
+        for (let [key, value] of formData.entries()) {
+            if (value.trim() !== '') {
+                updateData[key] = value.trim();
+            }
+        }
+        
+        try {
+            const response = await fetch(`/api/students/${this.selectedStudent.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Update the selected student data
+                Object.assign(this.selectedStudent, updateData);
+                
+                // Update the student in the main students array
+                const studentIndex = this.students.findIndex(s => s.id === this.selectedStudent.id);
+                if (studentIndex !== -1) {
+                    Object.assign(this.students[studentIndex], updateData);
+                }
+                
+                // Update the filtered students array
+                const filteredIndex = this.filteredStudents.findIndex(s => s.id === this.selectedStudent.id);
+                if (filteredIndex !== -1) {
+                    Object.assign(this.filteredStudents[filteredIndex], updateData);
+                }
+                
+                // Re-render the student list to show updated information
+                this.renderStudents();
+                
+                // Switch back to view mode
+                this.isEditMode = false;
+                this.showStudentModal(this.selectedStudent);
+                this.updateEditButton(false);
+                
+                alert('Student information updated successfully!');
+            } else {
+                alert('Failed to update student: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error updating student:', error);
+            alert('Error updating student. Please try again.');
+        }
+    }
+
+    editNotes(studentId) {
+        const student = this.students.find(s => s.id == studentId);
+        if (!student) {
+            console.error('Student not found');
+            return;
+        }
+
+        this.selectedStudent = student;
+        this.showNotesModal(student);
+    }
+
+    showNotesModal(student) {
+        const modal = document.getElementById('notesModal');
+        const modalBody = document.getElementById('notesModalBody');
+        
+        modalBody.innerHTML = `
+            <div class="notes-content">
+                <h4>Notes for ${student.student_first_name} ${student.student_last_name}</h4>
+                <textarea id="notesTextarea" rows="8" placeholder="Add notes about this student...">${student.notes || ''}</textarea>
+            </div>
+        `;
+        
+        modal.style.display = 'flex';
+    }
+
+    async saveNotes() {
+        if (!this.selectedStudent) return;
+        
+        const notesTextarea = document.getElementById('notesTextarea');
+        const notes = notesTextarea.value.trim();
+        
+        try {
+            const response = await fetch(`/api/students/${this.selectedStudent.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ notes: notes })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Update the selected student data
+                this.selectedStudent.notes = notes;
+                
+                // Update the student in the main students array
+                const studentIndex = this.students.findIndex(s => s.id === this.selectedStudent.id);
+                if (studentIndex !== -1) {
+                    this.students[studentIndex].notes = notes;
+                }
+                
+                // Update the filtered students array
+                const filteredIndex = this.filteredStudents.findIndex(s => s.id === this.selectedStudent.id);
+                if (filteredIndex !== -1) {
+                    this.filteredStudents[filteredIndex].notes = notes;
+                }
+                
+                this.closeNotesModal();
+                alert('Notes saved successfully!');
+            } else {
+                alert('Failed to save notes: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error saving notes:', error);
+            alert('Error saving notes. Please try again.');
+        }
+    }
+
+    closeNotesModal() {
+        const modal = document.getElementById('notesModal');
+        modal.style.display = 'none';
+        this.selectedStudent = null;
+    }
 
     formatDate(date) {
         return date.toLocaleDateString('en-US', { 
@@ -551,46 +824,7 @@ function closeEditStudentModal() {
 }
 
 async function saveStudentChanges() {
-    if (!window.studentsManager.selectedStudent) return;
-    
-    const form = document.getElementById('editStudentForm');
-    const formData = new FormData(form);
-    
-    const updateData = {
-        price_per_lesson: parseFloat(formData.get('price_per_lesson')) || 0,
-        ten_pack_price: parseFloat(formData.get('ten_pack_price')) || 0,
-        notes: formData.get('notes') || ''
-    };
-    
-    try {
-        const response = await fetch(`/api/students/${window.studentsManager.selectedStudent.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updateData)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            // Update the selected student data
-            window.studentsManager.selectedStudent.price_per_lesson = updateData.price_per_lesson;
-            window.studentsManager.selectedStudent.ten_pack_price = updateData.ten_pack_price;
-            window.studentsManager.selectedStudent.notes = updateData.notes;
-            
-            // Refresh the student details modal
-            window.studentsManager.showStudentDetails(window.studentsManager.selectedStudent);
-            
-            // Close edit modal
-            closeEditStudentModal();
-            
-            alert('Student information updated successfully!');
-        } else {
-            alert('Failed to update student: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error updating student:', error);
-        alert('Error updating student. Please try again.');
+    if (window.studentsManager) {
+        window.studentsManager.saveStudentChanges();
     }
 }

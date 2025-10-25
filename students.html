@@ -128,13 +128,34 @@
             <div class="modal-body" id="modalBody">
                 <!-- Student details will be populated by JavaScript -->
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" id="modalFooter">
                 <button class="btn btn-secondary" onclick="closeStudentModal()">Close</button>
-                <button class="btn btn-outline" onclick="editStudent()">
+                <button class="btn btn-outline" onclick="editStudent()" id="editBtn">
                     <i class="fas fa-edit"></i> Edit Student
                 </button>
                 <button class="btn btn-primary" onclick="scheduleLesson()">
                     <i class="fas fa-calendar-plus"></i> Schedule Lesson
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Modal -->
+    <div id="notesModal" class="student-modal" style="display: none;">
+        <div class="modal-content notes-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-sticky-note"></i> Student Notes</h3>
+                <button class="close-btn" onclick="window.studentsManager.closeNotesModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="notesModalBody">
+                <!-- Notes content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.studentsManager.closeNotesModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="window.studentsManager.saveNotes()">
+                    <i class="fas fa-save"></i> Save Notes
                 </button>
             </div>
         </div>

@@ -69,6 +69,11 @@ class LessonScheduler {
             select.value = studentId;
             // Hide student info section when pre-selected from URL
             studentInfo.style.display = 'none';
+            // Prefill lesson title and subject
+            this.prefillLessonTitle(studentId);
+            if (student.subjects) {
+                document.getElementById('lessonSubject').value = student.subjects;
+            }
         } else {
             console.warn('Student with ID', studentId, 'not found');
         }
@@ -85,9 +90,12 @@ class LessonScheduler {
                 // Show student info when manually selecting a student
                 studentInfo.style.display = 'block';
                 this.showStudentInfo(e.target.value);
+                this.prefillLessonTitle(e.target.value);
             } else {
                 // Hide student info when no student selected
                 studentInfo.style.display = 'none';
+                // Clear lesson title when no student selected
+                document.getElementById('lessonTitle').value = '';
             }
         });
 
@@ -138,12 +146,39 @@ class LessonScheduler {
         }
     }
 
+    prefillLessonTitle(studentId) {
+        const student = this.students.find(s => s.id == studentId);
+        if (student) {
+            const studentName = `${student.student_first_name} ${student.student_last_name}`;
+            const subject = student.subjects || 'Tutoring';
+            const lessonTitle = `${studentName} - ${subject}`;
+            document.getElementById('lessonTitle').value = lessonTitle;
+        }
+    }
+
     async handleSubmit(e) {
         e.preventDefault();
         
         const lessonData = this.collectLessonData();
         if (this.validateLessonData(lessonData)) {
-            await this.generateAndDownloadICS(lessonData);
+            await this.saveLessonToDatabase(lessonData);
+            this.showSuccessMessage(lessonData);
+            // Redirect to dashboard after successful lesson creation
+            setTimeout(() => {
+                window.location.href = 'admin-dashboard.html';
+            }, 2000);
+        }
+    }
+
+    async downloadCalendar() {
+        const lessonData = this.collectLessonData();
+        if (this.validateLessonData(lessonData)) {
+            // Generate and download ICS without saving to database
+            const icsContent = this.generateICSContent(lessonData);
+            const filename = `${lessonData.student.student_first_name}_${lessonData.student.student_last_name}_${lessonData.subject.replace(/[^a-z0-9]/gi, '_')}`;
+            
+            this.downloadICS(icsContent, filename);
+            this.showDownloadMessage(lessonData);
         }
     }
 
@@ -160,6 +195,7 @@ class LessonScheduler {
             location: document.getElementById('lessonLocation').value,
             subject: document.getElementById('lessonSubject').value.trim(),
             description: document.getElementById('lessonDescription').value.trim(),
+            notes: document.getElementById('lessonNotes').value.trim(),
             reminder: parseInt(document.getElementById('lessonReminder').value),
             isRecurring: document.getElementById('isRecurring').checked,
             recurrenceType: document.getElementById('recurrenceType').value,
@@ -442,6 +478,33 @@ class LessonScheduler {
         message.innerHTML = `
             <i class="fas fa-check-circle"></i>
             ${lessonCount} ${lessonType} created for ${lessonData.student.student_first_name} ${lessonData.student.student_last_name}!<br>
+            <small>Redirecting to dashboard...</small>
+        `;
+        
+        document.body.appendChild(message);
+        
+        setTimeout(() => {
+            message.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            message.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(message);
+            }, 300);
+        }, 5000);
+    }
+
+    showDownloadMessage(lessonData) {
+        const message = document.createElement('div');
+        message.className = 'success-notification';
+        
+        const lessonCount = lessonData.isRecurring ? lessonData.recurrenceCount : 1;
+        const lessonType = lessonData.isRecurring ? 'recurring lessons' : 'lesson';
+        
+        message.innerHTML = `
+            <i class="fas fa-download"></i>
+            Calendar file downloaded for ${lessonCount} ${lessonType} with ${lessonData.student.student_first_name} ${lessonData.student.student_last_name}!<br>
             <small>The .ics file has been downloaded. Double-click it to add to your calendar.</small>
         `;
         
@@ -502,6 +565,7 @@ function previewLesson() {
             <p><strong>Duration:</strong> ${lessonData.duration} minutes</p>
             <p><strong>Location:</strong> ${lessonData.location}</p>
             <p><strong>Description:</strong> ${lessonData.description || 'No description provided'}</p>
+            <p><strong>Notes:</strong> ${lessonData.notes || 'No notes provided'}</p>
             <p><strong>Reminder:</strong> ${lessonData.reminder > 0 ? `${lessonData.reminder} minutes before` : 'No reminder'}</p>
     `;
     
@@ -524,6 +588,13 @@ function closePreview() {
 }
 
 // Initialize when page loads
+// Global function for download calendar button
+function downloadCalendar() {
+    if (window.lessonScheduler) {
+        window.lessonScheduler.downloadCalendar();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     window.lessonScheduler = new LessonScheduler();
 });

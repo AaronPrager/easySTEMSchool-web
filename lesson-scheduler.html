@@ -110,6 +110,11 @@
                             <label for="lessonDescription">Lesson Description</label>
                             <textarea id="lessonDescription" name="lessonDescription" rows="3" placeholder="Lesson objectives, topics to cover, homework assigned..."></textarea>
                         </div>
+
+                        <div class="form-group">
+                            <label for="lessonNotes">Lesson Notes</label>
+                            <textarea id="lessonNotes" name="lessonNotes" rows="2" placeholder="Additional notes, special instructions, materials needed..."></textarea>
+                        </div>
                     </div>
 
                     <!-- Recurring Options -->
@@ -166,11 +171,11 @@
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-calendar-plus"></i>
-                            Create Lesson & Download Calendar
+                            Create Lesson
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="previewLesson()">
-                            <i class="fas fa-eye"></i>
-                            Preview Lesson
+                        <button type="button" class="btn btn-secondary" onclick="downloadCalendar()">
+                            <i class="fas fa-download"></i>
+                            Download Calendar
                         </button>
                     </div>
                 </form>

@@ -127,18 +127,18 @@
                     </div>
                 </div>
 
-                <!-- System Info -->
+                <!-- Reports -->
                 <div class="admin-card">
                     <div class="card-icon">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="card-content">
-                        <h3>System Information</h3>
-                        <div class="system-info">
-                            <p><strong>Version:</strong> 1.0.0</p>
-                            <p><strong>Database:</strong> SQLite</p>
-                            <p><strong>Last Updated:</strong> <span id="lastUpdated">-</span></p>
-                            <p><strong>Status:</strong> <span class="status-online">Online</span></p>
+                        <h3>Reports</h3>
+                        <p>Generate printable lesson reports</p>
+                        <div class="card-actions">
+                            <a href="reports.html" class="btn btn-primary">
+                                <i class="fas fa-chart-bar"></i> View Reports
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -177,9 +177,6 @@
                 if (lessonsResult.success) {
                     document.getElementById('totalLessons').textContent = lessonsResult.lessons.length;
                 }
-
-                // Set last updated
-                document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
             } catch (error) {
                 console.error('Error loading stats:', error);
             }

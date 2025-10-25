@@ -399,9 +399,9 @@ class Database {
                 INSERT INTO lessons (
                     student_id, student_name, title, subject,
                     start_time, end_time, duration, location,
-                    description, reminder, is_recurring, recurrence_type,
+                    description, notes, reminder, is_recurring, recurrence_type,
                     occurrence_number, total_occurrences, recurrence_group_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const params = [
@@ -414,6 +414,7 @@ class Database {
                 lessonData.duration,
                 lessonData.location,
                 lessonData.description || null,
+                lessonData.notes || null,
                 lessonData.reminder || 0,
                 lessonData.is_recurring ? 1 : 0,
                 lessonData.recurrence_type || null,
@@ -540,19 +541,23 @@ class Database {
             const fields = [];
             const values = [];
 
+            // List of all updatable fields
+            const updatableFields = [
+                'student_first_name', 'student_last_name', 'student_phone', 'student_email',
+                'student_date_of_birth', 'student_grade', 'school_name',
+                'parent_full_name', 'parent_email', 'parent_phone', 'parent_address',
+                'subjects', 'specific_goals', 'learning_difficulties', 'additional_comments',
+                'emergency_name', 'emergency_relationship', 'emergency_phone', 'emergency_email', 'emergency_address',
+                'how_did_you_hear', 'price_per_lesson', 'ten_pack_price', 'notes'
+            ];
+
             // Build dynamic update query
-            if (updateData.price_per_lesson !== undefined) {
-                fields.push('price_per_lesson = ?');
-                values.push(updateData.price_per_lesson);
-            }
-            if (updateData.ten_pack_price !== undefined) {
-                fields.push('ten_pack_price = ?');
-                values.push(updateData.ten_pack_price);
-            }
-            if (updateData.notes !== undefined) {
-                fields.push('notes = ?');
-                values.push(updateData.notes);
-            }
+            updatableFields.forEach(field => {
+                if (updateData[field] !== undefined) {
+                    fields.push(`${field} = ?`);
+                    values.push(updateData[field]);
+                }
+            });
 
             if (fields.length === 0) {
                 resolve({ changes: 0 });

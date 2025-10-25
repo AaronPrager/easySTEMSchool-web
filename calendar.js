@@ -396,6 +396,15 @@ class CalendarManager {
                     </div>
                 </div>
                 ` : ''}
+                ${lesson.notes ? `
+                <div class="detail-row">
+                    <i class="fas fa-sticky-note"></i>
+                    <div>
+                        <strong>Notes:</strong><br>
+                        ${lesson.notes}
+                    </div>
+                </div>
+                ` : ''}
                 ${lesson.is_recurring ? `
                 <div class="detail-row recurring-badge">
                     <i class="fas fa-repeat"></i>

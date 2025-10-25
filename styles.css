@@ -2542,8 +2542,32 @@ body {
 }
 
 /* Edit Student Modal */
-#editStudentModal {
+#editStudentModal.lesson-modal {
     z-index: 10002; /* Higher than all other modals */
+}
+
+/* Edit Fields in Student Modal */
+.edit-field {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.edit-field:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.edit-field[readonly] {
+    background: #f5f5f5;
+    color: #666;
+    cursor: not-allowed;
 }
 
 .delete-options-modal {
@@ -3022,8 +3046,321 @@ body {
 .student-name {
     font-size: 1rem;
     color: #2c3e50;
-    margin: 0;
+    margin: 0 0 0.3rem 0;
     font-weight: 600;
+}
+
+.student-details {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.2rem;
+}
+
+.student-grade,
+.student-subject,
+.student-price,
+.student-package {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.student-grade {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.student-subject {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.student-price {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.student-package {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+/* Reports Page Styles */
+.reports-section {
+    padding: 2rem 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.reports-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.reports-header h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+}
+
+.reports-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.report-filters {
+    margin-bottom: 2rem;
+}
+
+.filter-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.filter-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.report-results {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.report-header h3 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.report-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.report-summary {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.report-summary h4 {
+    color: #2c3e50;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+}
+
+.summary-stats {
+    display: flex;
+    gap: 2rem;
+    margin: 1rem 0;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #3498db;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-breakdown {
+    margin: 0.75rem 0;
+    font-size: 0.95rem;
+    color: #34495e;
+}
+
+.lessons-table {
+    overflow-x: auto;
+}
+
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.report-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.report-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #ecf0f1;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.report-table tr:hover {
+    background: #f8f9fa;
+}
+
+.report-table tr:last-child td {
+    border-bottom: none;
+}
+
+.no-data {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    padding: 2rem !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .filter-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+    }
+    
+    .report-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .report-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .summary-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .report-table {
+        font-size: 0.8rem;
+    }
+    
+    .report-table th,
+    .report-table td {
+        padding: 0.5rem;
+    }
+}
+
+/* Notes Modal Styles */
+.notes-modal {
+    max-width: 600px;
+    width: 100%;
+}
+
+.notes-modal .modal-header {
+    padding: 1rem 1.5rem 0.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.notes-modal .modal-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.notes-content {
+    margin-bottom: 1rem;
+}
+
+.notes-content h4 {
+    margin: 0 0 1rem 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.notes-content textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 150px;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.notes-content textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.notes-content textarea::placeholder {
+    color: #999;
+    font-style: italic;
 }
 
 .student-badges {
@@ -3304,6 +3641,23 @@ body {
 
     .student-name {
         font-size: 0.9rem;
+    }
+
+    .student-details {
+        gap: 0.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .student-grade,
+    .student-subject,
+    .student-price {
+        font-size: 0.75rem;
+        padding: 0.15rem 0.4rem;
+    }
+
+    .student-subject {
+        max-width: 150px;
     }
 
     .student-actions .btn {
