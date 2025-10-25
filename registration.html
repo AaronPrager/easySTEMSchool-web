@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration | Easy STEM School</title>
+    <link rel="stylesheet" href="styles.css?v=15">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Admin Navigation -->
+    <header class="admin-header">
+        <div class="container">
+            <div class="admin-logo">
+                <h1><i class="fas fa-user-plus"></i> Student Registration</h1>
+                <p>Easy STEM School Management</p>
+            </div>
+            <div class="admin-nav">
+                <a href="admin-dashboard.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="students.html" class="nav-link">
+                    <i class="fas fa-users"></i> Students
+                </a>
+                <a href="lesson-scheduler.html" class="nav-link">
+                    <i class="fas fa-calendar-plus"></i> Schedule
+                </a>
+                <a href="calendar.html" class="nav-link">
+                    <i class="fas fa-calendar"></i> Calendar
+                </a>
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Main Site
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Registration Wizard -->
+    <section class="registration-wizard">
+        <div class="container">
+            <div class="wizard-header">
+                <h1>Student Registration</h1>
+                <p class="wizard-subtitle">Join our personalized STEM education program</p>
+                
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-steps">
+                        <div class="step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Student Info</div>
+                        </div>
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Parent Info</div>
+                        </div>
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Academic Needs</div>
+                        </div>
+                        <div class="step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Emergency Contact</div>
+                        </div>
+                        <div class="step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-label">Consent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Form Container -->
+            <div class="wizard-container">
+                <form id="registrationWizard" class="wizard-form">
+                    
+                    <!-- Stage 1: Student Information -->
+                    <div class="wizard-stage active" data-stage="1">
+                        <div class="stage-header">
+                            <h2><i class="fas fa-graduation-cap"></i> Student Information</h2>
+                            <p>Please provide information about the student who will be participating in our programs.</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="studentFirstName">Student First Name *</label>
+                                    <input type="text" id="studentFirstName" name="studentFirstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentLastName">Student Last Name *</label>
+                                    <input type="text" id="studentLastName" name="studentLastName" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="studentPhone">Student's Phone *</label>
+                                    <input type="tel" id="studentPhone" name="studentPhone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentEmail">Student Email</label>
+                                    <input type="email" id="studentEmail" name="studentEmail" placeholder="Optional - if student has their own email">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="studentDateOfBirth">Date of Birth *</label>
+                                    <input type="date" id="studentDateOfBirth" name="studentDateOfBirth" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentGrade">Grade (4-12) *</label>
+                                    <select id="studentGrade" name="studentGrade" required>
+                                        <option value="">Select Grade</option>
+                                        <option value="4">Grade 4</option>
+                                        <option value="5">Grade 5</option>
+                                        <option value="6">Grade 6</option>
+                                        <option value="7">Grade 7</option>
+                                        <option value="8">Grade 8</option>
+                                        <option value="9">Grade 9</option>
+                                        <option value="10">Grade 10</option>
+                                        <option value="11">Grade 11</option>
+                                        <option value="12">Grade 12</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="schoolName">School Name *</label>
+                                <input type="text" id="schoolName" name="schoolName" placeholder="Name of student's current school" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="wizard-navigation">
+                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                <i class="fas fa-arrow-left"></i>
+                                Previous
+                            </button>
+                            <button type="button" class="btn btn-primary" id="nextBtn">
+                                Next
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stage 2: Parent Information -->
+                    <div class="wizard-stage" data-stage="2">
+                        <div class="stage-header">
+                            <h2><i class="fas fa-user"></i> Parent/Guardian Information</h2>
+                            <p>Please provide your contact information as the primary contact for your child.</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="parentFullName">Full Name *</label>
+                                <input type="text" id="parentFullName" name="parentFullName" placeholder="First and Last Name" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="parentPhone">Phone Number *</label>
+                                    <input type="tel" id="parentPhone" name="parentPhone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="parentEmail">Email *</label>
+                                    <input type="email" id="parentEmail" name="parentEmail" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="parentAddress">Address *</label>
+                                <textarea id="parentAddress" name="parentAddress" rows="3" placeholder="Street address, city, state, zip code" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="wizard-navigation">
+                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                <i class="fas fa-arrow-left"></i>
+                                Previous
+                            </button>
+                            <button type="button" class="btn btn-primary" id="nextBtn">
+                                Next
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stage 3: Academic Needs -->
+                    <div class="wizard-stage" data-stage="3">
+                        <div class="stage-header">
+                            <h2><i class="fas fa-book"></i> Academic Needs</h2>
+                            <p>Tell us about your child's academic goals and tutoring needs.</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="subjects">Subject Need Tutoring *</label>
+                                <input type="text" id="subjects" name="subjects" placeholder="e.g., Mathematics, Physics, Computer Science, Test Preparation, etc." required>
+                            </div>
+                            <div class="form-group">
+                                <label for="specificGoals">Specific Goals *</label>
+                                <textarea id="specificGoals" name="specificGoals" rows="4" placeholder="e.g., AP exam prep, improving grades, competition prep, homework help, etc." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="learningDifficulties">Does the student have any learning difficulties or special needs?</label>
+                                <textarea id="learningDifficulties" name="learningDifficulties" rows="3" placeholder="Please describe any learning challenges, accommodations needed, or special requirements..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="additionalComments">Any additional comments or requests?</label>
+                                <textarea id="additionalComments" name="additionalComments" rows="3" placeholder="Any other information that would help us provide the best tutoring experience..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="howDidYouHear">How did you hear about us?</label>
+                                <select id="howDidYouHear" name="howDidYouHear">
+                                    <option value="">Select an option</option>
+                                    <option value="Google Search">Google Search</option>
+                                    <option value="Social Media">Social Media (Facebook, Instagram, etc.)</option>
+                                    <option value="Referral">Referral from friend/family</option>
+                                    <option value="School">School recommendation</option>
+                                    <option value="Online Ad">Online advertisement</option>
+                                    <option value="Community Event">Community event</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="wizard-navigation">
+                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                <i class="fas fa-arrow-left"></i>
+                                Previous
+                            </button>
+                            <button type="button" class="btn btn-primary" id="nextBtn">
+                                Next
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stage 4: Emergency Contact -->
+                    <div class="wizard-stage" data-stage="4">
+                        <div class="stage-header">
+                            <h2><i class="fas fa-phone-alt"></i> Emergency Contact Information</h2>
+                            <p>Please provide an emergency contact who can be reached if you're unavailable.</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-group inline-checkbox">
+                                <label class="checkbox-label inline">
+                                    <input type="checkbox" id="sameAsParent" name="sameAsParent">
+                                    <span class="checkmark"></span>
+                                    Same as Parent Information
+                                </label>
+                            </div>
+                            
+                            <div id="emergencyContactFields">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="emergencyName">Emergency Contact Name *</label>
+                                        <input type="text" id="emergencyName" name="emergencyName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="emergencyRelationship">Relationship to Student *</label>
+                                        <select id="emergencyRelationship" name="emergencyRelationship" required>
+                                            <option value="">Select Relationship</option>
+                                            <option value="Parent">Parent</option>
+                                            <option value="Guardian">Guardian</option>
+                                            <option value="Grandparent">Grandparent</option>
+                                            <option value="Aunt/Uncle">Aunt/Uncle</option>
+                                            <option value="Family Friend">Family Friend</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="emergencyPhone">Emergency Contact Phone *</label>
+                                        <input type="tel" id="emergencyPhone" name="emergencyPhone" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="emergencyEmail">Emergency Contact Email</label>
+                                        <input type="email" id="emergencyEmail" name="emergencyEmail">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergencyAddress">Emergency Contact Address</label>
+                                    <textarea id="emergencyAddress" name="emergencyAddress" rows="3" placeholder="Street address, city, state, zip code"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="wizard-navigation">
+                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                <i class="fas fa-arrow-left"></i>
+                                Previous
+                            </button>
+                            <button type="button" class="btn btn-primary" id="nextBtn">
+                                Next
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stage 5: Consent & Agreements -->
+                    <div class="wizard-stage" data-stage="5">
+                        <div class="stage-header">
+                            <h2><i class="fas fa-shield-alt"></i> Liability Release Agreement</h2>
+                            <p>Please read and agree to our liability release terms before completing registration.</p>
+                        </div>
+                        
+                        <div class="consent-container">
+                            <div class="consent-section">
+                                <h3>Liability Release</h3>
+                                <div class="consent-content">
+                                    <p>I, the parent/guardian of the student named in this form, acknowledge and agree to the following:</p>
+                                    
+                                    <p><strong>Assumption of Risk</strong> – I understand that while Easy STEM School provides a safe and structured learning environment, participation in tutoring services involves inherent risks. I assume all responsibility for my child's safety during and after tutoring sessions.</p>
+                                    
+                                    <p><strong>Release of Liability</strong> – I hereby release and hold harmless Easy STEM School, its instructors, and any affiliates from any claims, demands, or liabilities that may arise from my child's participation in tutoring sessions.</p>
+                                    
+                                    <p><strong>Medical Emergencies</strong> – If a medical emergency occurs, Easy STEM School will contact the parent/guardian immediately. In serious cases, Easy STEM School will call emergency services if necessary. Parents/guardians are financially responsible for medical expenses.</p>
+                                    
+                                    <p><strong>Payments</strong> - Payment must be made no later than the next scheduled session. Payment can be made via cash, Zelle, PayPal, or Venmo.</p>
+                                    
+                                    <p><strong>Online Tutoring Requirements</strong> - Students must have a stable internet connection, webcam, and microphone. Sessions may not be recorded without prior written consent from the tutor and parent/guardian.</p>
+                                    
+                                    <p>By selecting "I Agree" below, I confirm that I have read, understood, and accepted the terms outlined in this agreement.</p>
+                                </div>
+                            </div>
+
+                            <div class="agreement-checkboxes">
+                                <label class="checkbox-label required">
+                                    <input type="checkbox" id="liabilityRelease" name="liabilityRelease" required>
+                                    <span class="checkmark"></span>
+                                    I have read and agree to the Liability Release Agreement *
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="wizard-navigation">
+                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                <i class="fas fa-arrow-left"></i>
+                                Previous
+                            </button>
+                            <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                                <i class="fas fa-check"></i>
+                                Complete Registration
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Success Page -->
+    <section id="successPage" class="success-page" style="display: none;">
+        <div class="container">
+            <div class="success-container">
+                <div class="success-content">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h1>Registration Successful!</h1>
+                    <p class="success-message">
+                        Thank you for registering with Easy STEM School. Your registration has been submitted successfully.
+                    </p>
+                    <div class="success-contact">
+                        <p><strong>Questions?</strong> Contact us at:</p>
+                        <p><i class="fas fa-phone"></i> 650-224-8014</p>
+                        <p><i class="fas fa-envelope"></i> easystemschool@gmail.com</p>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="closeRegistration()">
+                        <i class="fas fa-home"></i>
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Easy STEM School</h3>
+                    <p>Dedicated, thoughtful teaching that builds confidence and mastery.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#team">Team</a></li>
+                        <li><a href="index.html#services">Services</a></li>
+                        <li><a href="index.html#testimonials">Testimonials</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                        <li><a href="registration.html">Register</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p>650-224-8014</p>
+                    <p>easystemschool@gmail.com</p>
+                    <p>Newton, MA</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 by Easy STEM School</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="registration-wizard.js"></script>
+</body>
+</html>

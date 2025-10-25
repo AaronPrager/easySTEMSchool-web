@@ -98,7 +98,7 @@ if (contactForm) {
         e.preventDefault();
         
         if (!validateForm(this)) {
-            showNotification('Please fill in all required fields correctly.', 'error');
+            // Don't show notification, fields are already marked with red borders
             return;
         }
 

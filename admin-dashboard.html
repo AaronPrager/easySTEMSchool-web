@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Easy STEM School</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <div class="admin-logo">
+                <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+                <p>Easy STEM School Management</p>
+            </div>
+            <div class="admin-nav">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Main Site
+                </a>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="admin-dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h2>Management System</h2>
+                <p>Access all administrative functions</p>
+            </div>
+
+            <div class="admin-grid">
+                <!-- Student Management -->
+                <div class="admin-card">
+                    <div class="card-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Student Management</h3>
+                        <p>View, search, and manage all registered students</p>
+                        <div class="card-actions">
+                            <a href="students.html" class="btn btn-primary">
+                                <i class="fas fa-users"></i> View Students
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lesson Scheduling -->
+                <div class="admin-card">
+                    <div class="card-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Lesson Scheduling</h3>
+                        <p>Schedule lessons for students and manage calendar</p>
+                        <div class="card-actions">
+                            <a href="lesson-scheduler.html" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Schedule Lesson
+                            </a>
+                            <a href="calendar.html" class="btn btn-outline">
+                                <i class="fas fa-calendar"></i> View Calendar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Management -->
+                <div class="admin-card">
+                    <div class="card-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Registration System</h3>
+                        <p>Student registration and enrollment management</p>
+                        <div class="card-actions">
+                            <a href="registration.html" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> New Registration
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Stats -->
+                <div class="admin-card stats-card">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>System Statistics</h3>
+                        <div class="stats-grid" id="statsGrid">
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalStudents">-</span>
+                                <span class="stat-label">Total Students</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalLessons">-</span>
+                                <span class="stat-label">Scheduled Lessons</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="recentRegistrations">-</span>
+                                <span class="stat-label">This Month</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="admin-card">
+                    <div class="card-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Quick Actions</h3>
+                        <p>Common administrative tasks</p>
+                        <div class="card-actions">
+                            <button class="btn btn-outline" onclick="clearAllData()">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                            <button class="btn btn-outline" onclick="exportData()">
+                                <i class="fas fa-download"></i> Export Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Info -->
+                <div class="admin-card">
+                    <div class="card-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>System Information</h3>
+                        <div class="system-info">
+                            <p><strong>Version:</strong> 1.0.0</p>
+                            <p><strong>Database:</strong> SQLite</p>
+                            <p><strong>Last Updated:</strong> <span id="lastUpdated">-</span></p>
+                            <p><strong>Status:</strong> <span class="status-online">Online</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Check admin authentication
+        if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
+            window.location.href = 'admin.html';
+        }
+
+        // Load dashboard statistics
+        async function loadStats() {
+            try {
+                // Load student stats
+                const studentsResponse = await fetch('/api/students');
+                const studentsResult = await studentsResponse.json();
+                
+                if (studentsResult.success) {
+                    const students = studentsResult.students;
+                    document.getElementById('totalStudents').textContent = students.length;
+                    
+                    // Count recent registrations (this month)
+                    const thisMonth = new Date();
+                    thisMonth.setDate(1);
+                    const recentRegistrations = students.filter(s => new Date(s.created_at) >= thisMonth).length;
+                    document.getElementById('recentRegistrations').textContent = recentRegistrations;
+                }
+
+                // Load lesson stats
+                const lessonsResponse = await fetch('/api/lessons');
+                const lessonsResult = await lessonsResponse.json();
+                
+                if (lessonsResult.success) {
+                    document.getElementById('totalLessons').textContent = lessonsResult.lessons.length;
+                }
+
+                // Set last updated
+                document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            window.location.href = 'admin.html';
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear ALL data? This action cannot be undone!')) {
+                if (confirm('This will delete all students, lessons, and registrations. Are you absolutely sure?')) {
+                    // Redirect to clear data script
+                    window.location.href = 'quick-clear.js';
+                }
+            }
+        }
+
+        function exportData() {
+            alert('Export functionality will be implemented in a future update.');
+        }
+
+        // Load stats when page loads
+        document.addEventListener('DOMContentLoaded', loadStats);
+    </script>
+</body>
+</html>

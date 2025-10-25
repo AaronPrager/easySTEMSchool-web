@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Scheduler - Easy STEM School</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <div class="admin-logo">
+                <h1><i class="fas fa-calendar-plus"></i> Lesson Scheduler</h1>
+                <p>Easy STEM School Management</p>
+            </div>
+            <div class="admin-nav">
+                <a href="admin-dashboard.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="students.html" class="nav-link">
+                    <i class="fas fa-users"></i> Students
+                </a>
+                <a href="registration.html" class="nav-link">
+                    <i class="fas fa-user-plus"></i> Registration
+                </a>
+                <a href="calendar.html" class="nav-link">
+                    <i class="fas fa-calendar"></i> Calendar
+                </a>
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Main Site
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="lesson-scheduler-section">
+        <div class="container">
+            <div class="scheduler-header">
+                <h2><i class="fas fa-calendar-plus"></i> Lesson Scheduler</h2>
+                <p>Schedule lessons for registered students and add them to your calendar</p>
+            </div>
+
+            <div class="scheduler-container">
+                <form id="lessonForm" class="lesson-form">
+                    <!-- Student Selection -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-user-graduate"></i> Select Student</h3>
+                        <div class="form-group">
+                            <label for="studentSelect">Student *</label>
+                            <select id="studentSelect" name="studentSelect" required>
+                                <option value="">Loading students...</option>
+                            </select>
+                        </div>
+                        <div id="studentInfo" class="student-info" style="display: none;">
+                            <div class="student-details">
+                                <h4>Student Information</h4>
+                                <div id="studentDetails"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson Details -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-book"></i> Lesson Details</h3>
+                        <div class="form-group">
+                            <label for="lessonTitle">Lesson Title *</label>
+                            <input type="text" id="lessonTitle" name="lessonTitle" placeholder="e.g., Math Tutoring Session" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="lessonDate">Date *</label>
+                                <input type="date" id="lessonDate" name="lessonDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lessonTime">Time *</label>
+                                <input type="time" id="lessonTime" name="lessonTime" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="lessonDuration">Duration *</label>
+                                <select id="lessonDuration" name="lessonDuration" required>
+                                    <option value="30">30 minutes</option>
+                                    <option value="60" selected>1 hour</option>
+                                    <option value="90">1.5 hours</option>
+                                    <option value="120">2 hours</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="lessonLocation">Location</label>
+                                <select id="lessonLocation" name="lessonLocation">
+                                    <option value="Online">Online</option>
+                                    <option value="Easy STEM School">Easy STEM School</option>
+                                    <option value="Student's Home">Student's Home</option>
+                                    <option value="Library">Library</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonSubject">Subject *</label>
+                            <input type="text" id="lessonSubject" name="lessonSubject" placeholder="e.g., Mathematics, Physics, Computer Science" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonDescription">Lesson Description</label>
+                            <textarea id="lessonDescription" name="lessonDescription" rows="3" placeholder="Lesson objectives, topics to cover, homework assigned..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Recurring Options -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-repeat"></i> Recurring Lessons</h3>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="isRecurring" name="isRecurring">
+                                <span class="checkmark"></span>
+                                This is a recurring lesson
+                            </label>
+                        </div>
+
+                        <div id="recurringOptions" class="recurring-options" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="recurrenceType">Repeat</label>
+                                    <select id="recurrenceType" name="recurrenceType">
+                                        <option value="weekly">Weekly</option>
+                                        <option value="biweekly">Bi-weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="recurrenceCount">Number of Lessons</label>
+                                    <select id="recurrenceCount" name="recurrenceCount">
+                                        <option value="4">4 lessons</option>
+                                        <option value="8" selected>8 lessons</option>
+                                        <option value="12">12 lessons</option>
+                                        <option value="16">16 lessons</option>
+                                        <option value="20">20 lessons</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reminder Settings -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-bell"></i> Reminder Settings</h3>
+                        <div class="form-group">
+                            <label for="lessonReminder">Reminder</label>
+                            <select id="lessonReminder" name="lessonReminder">
+                                <option value="0">No reminder</option>
+                                <option value="15">15 minutes before</option>
+                                <option value="30">30 minutes before</option>
+                                <option value="60" selected>1 hour before</option>
+                                <option value="1440">1 day before</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus"></i>
+                            Create Lesson & Download Calendar
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="previewLesson()">
+                            <i class="fas fa-eye"></i>
+                            Preview Lesson
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lesson Preview Modal -->
+            <div id="lessonPreview" class="lesson-preview-modal" style="display: none;">
+                <div class="preview-content">
+                    <h3>Lesson Preview</h3>
+                    <div id="previewDetails"></div>
+                    <button class="btn btn-primary" onclick="closePreview()">Close</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="lesson-scheduler.js"></script>
+</body>
+</html>
+

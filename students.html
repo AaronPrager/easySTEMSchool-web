@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students - Easy STEM School</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <div class="admin-logo">
+                <h1><i class="fas fa-user-graduate"></i> Student Management</h1>
+                <p>Easy STEM School Management</p>
+            </div>
+            <div class="admin-nav">
+                <a href="admin-dashboard.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="registration.html" class="nav-link">
+                    <i class="fas fa-user-plus"></i> Registration
+                </a>
+                <a href="lesson-scheduler.html" class="nav-link">
+                    <i class="fas fa-calendar-plus"></i> Schedule
+                </a>
+                <a href="calendar.html" class="nav-link">
+                    <i class="fas fa-calendar"></i> Calendar
+                </a>
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Main Site
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="students-section">
+        <div class="container">
+            <div class="students-header">
+                <h2><i class="fas fa-user-graduate"></i> Registered Students</h2>
+                <p>View and manage all registered students</p>
+            </div>
+
+            <!-- Search and Filter Controls -->
+            <div class="students-controls">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search students by name, grade, or subject...">
+                        <button class="clear-search" id="clearSearch" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label for="gradeFilter">Grade:</label>
+                        <select id="gradeFilter">
+                            <option value="">All Grades</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                            <option value="7">Grade 7</option>
+                            <option value="8">Grade 8</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="subjectFilter">Subject:</label>
+                        <select id="subjectFilter">
+                            <option value="">All Subjects</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="sortBy">Sort by:</label>
+                        <select id="sortBy">
+                            <option value="name">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="grade">Grade (Low to High)</option>
+                            <option value="grade-desc">Grade (High to Low)</option>
+                            <option value="date">Registration Date (Newest)</option>
+                            <option value="date-desc">Registration Date (Oldest)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-secondary" id="resetFilters">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Students List -->
+            <div class="students-list" id="studentsList">
+                <!-- Student list items will be populated by JavaScript -->
+            </div>
+
+            <!-- No Results Message -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>No students found</h3>
+                <p>Try adjusting your search criteria or filters</p>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading students...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Student Detail Modal -->
+    <div id="studentModal" class="student-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Student Details</h3>
+                <button class="close-btn" onclick="closeStudentModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Student details will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeStudentModal()">Close</button>
+                <button class="btn btn-outline" onclick="editStudent()">
+                    <i class="fas fa-edit"></i> Edit Student
+                </button>
+                <button class="btn btn-primary" onclick="scheduleLesson()">
+                    <i class="fas fa-calendar-plus"></i> Schedule Lesson
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="students.js"></script>
+</body>
+</html>

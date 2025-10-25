@@ -1,3 +1,21 @@
 {
-  "version": 2
+  "version": 2,
+  "functions": {
+    "api/contact.js": {
+      "runtime": "nodejs18.x"
+    },
+    "api/registration.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/contact",
+      "dest": "/api/contact.js"
+    },
+    {
+      "src": "/api/registration",
+      "dest": "/api/registration.js"
+    }
+  ]
 } 
