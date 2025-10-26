@@ -99,6 +99,12 @@ class LessonScheduler {
             }
         });
 
+        // Location change to show/hide connection link
+        document.getElementById('lessonLocation').addEventListener('change', (e) => {
+            const connectionLinkGroup = document.getElementById('connectionLinkGroup');
+            connectionLinkGroup.style.display = e.target.value === 'Online' ? 'block' : 'none';
+        });
+
         // Recurring checkbox
         document.getElementById('isRecurring').addEventListener('change', (e) => {
             const recurringOptions = document.getElementById('recurringOptions');
@@ -196,10 +202,11 @@ class LessonScheduler {
             subject: document.getElementById('lessonSubject').value.trim(),
             description: document.getElementById('lessonDescription').value.trim(),
             notes: document.getElementById('lessonNotes').value.trim(),
+            connection_link: document.getElementById('lessonConnectionLink').value.trim(),
             reminder: parseInt(document.getElementById('lessonReminder').value),
             isRecurring: document.getElementById('isRecurring').checked,
             recurrenceType: document.getElementById('recurrenceType').value,
-            recurrenceCount: parseInt(document.getElementById('recurrenceCount').value)
+            recurrenceEndDate: document.getElementById('recurrenceEndDate').value
         };
     }
 
@@ -262,7 +269,7 @@ class LessonScheduler {
             if (lessonData.isRecurring) {
                 dbLesson.recurrenceData = {
                     recurrenceType: lessonData.recurrenceType,
-                    recurrenceCount: lessonData.recurrenceCount
+                    end_date: lessonData.recurrenceEndDate
                 };
             }
 
@@ -355,14 +362,19 @@ class LessonScheduler {
         const events = [];
         const nowUTC = this.toUTCString(new Date());
         
-        for (let i = 0; i < lessonData.recurrenceCount; i++) {
-            const eventStart = this.calculateRecurrenceDate(startDateTime, i, lessonData.recurrenceType);
+        const seriesEndDate = new Date(lessonData.recurrenceEndDate);
+        let currentDate = new Date(startDateTime);
+        let occurrenceNumber = 1;
+        
+        // Create events until we reach the end date
+        while (currentDate <= seriesEndDate) {
+            const eventStart = new Date(currentDate);
             const eventEnd = this.addMinutes(eventStart, lessonData.duration);
             
             const startUTC = this.toUTCString(eventStart);
             const endUTC = this.toUTCString(eventEnd);
             
-            const eventTitle = `${lessonData.title} (${i + 1}/${lessonData.recurrenceCount})`;
+            const eventTitle = `${lessonData.title} (${occurrenceNumber})`;
             
             const event = [
                 'BEGIN:VEVENT',
@@ -390,27 +402,49 @@ class LessonScheduler {
 
             event.push('END:VEVENT');
             events.push(event);
+            
+            // Calculate next occurrence date
+            switch (lessonData.recurrenceType) {
+                case 'weekly':
+                    currentDate.setDate(currentDate.getDate() + 7);
+                    break;
+                case 'biweekly':
+                    currentDate.setDate(currentDate.getDate() + 14);
+                    break;
+                case 'monthly':
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    break;
+            }
+            occurrenceNumber++;
         }
         
         return events;
     }
 
-    calculateRecurrenceDate(startDate, weekOffset, recurrenceType) {
-        const date = new Date(startDate);
+    calculateLessonCount(lessonData) {
+        const seriesEndDate = new Date(lessonData.recurrenceEndDate);
+        const startDate = new Date(lessonData.date);
+        let currentDate = new Date(startDate);
+        let count = 0;
         
-        switch (recurrenceType) {
-            case 'weekly':
-                date.setDate(date.getDate() + (weekOffset * 7));
-                break;
-            case 'biweekly':
-                date.setDate(date.getDate() + (weekOffset * 14));
-                break;
-            case 'monthly':
-                date.setMonth(date.getMonth() + weekOffset);
-                break;
+        while (currentDate <= seriesEndDate) {
+            count++;
+            
+            // Calculate next occurrence date
+            switch (lessonData.recurrenceType) {
+                case 'weekly':
+                    currentDate.setDate(currentDate.getDate() + 7);
+                    break;
+                case 'biweekly':
+                    currentDate.setDate(currentDate.getDate() + 14);
+                    break;
+                case 'monthly':
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    break;
+            }
         }
         
-        return date;
+        return count;
     }
 
     formatDescription(lessonData) {
@@ -472,7 +506,7 @@ class LessonScheduler {
         const message = document.createElement('div');
         message.className = 'success-notification';
         
-        const lessonCount = lessonData.isRecurring ? lessonData.recurrenceCount : 1;
+        const lessonCount = lessonData.isRecurring ? this.calculateLessonCount(lessonData) : 1;
         const lessonType = lessonData.isRecurring ? 'recurring lessons' : 'lesson';
         
         message.innerHTML = `
@@ -499,7 +533,7 @@ class LessonScheduler {
         const message = document.createElement('div');
         message.className = 'success-notification';
         
-        const lessonCount = lessonData.isRecurring ? lessonData.recurrenceCount : 1;
+        const lessonCount = lessonData.isRecurring ? this.calculateLessonCount(lessonData) : 1;
         const lessonType = lessonData.isRecurring ? 'recurring lessons' : 'lesson';
         
         message.innerHTML = `
@@ -571,7 +605,7 @@ function previewLesson() {
     
     if (lessonData.isRecurring) {
         previewHTML += `
-            <p><strong>Recurring:</strong> Yes (${lessonData.recurrenceType}, ${lessonData.recurrenceCount} lessons)</p>
+            <p><strong>Recurring:</strong> Yes (${lessonData.recurrenceType}, until ${lessonData.recurrenceEndDate})</p>
         `;
     } else {
         previewHTML += `<p><strong>Recurring:</strong> No</p>`;

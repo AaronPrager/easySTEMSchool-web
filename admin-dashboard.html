@@ -7,144 +7,561 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
-    <header class="admin-header">
-        <div class="container">
-            <div class="admin-logo">
-                <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
-                <p>Easy STEM School Management</p>
+<body class="admin-layout">
+    <div class="admin-container">
+        <!-- Left Menu Panel -->
+        <aside class="left-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-shield-alt"></i> Admin</h2>
+                <p>Easy STEM School</p>
             </div>
-            <div class="admin-nav">
-                <a href="index.html" class="nav-link">
-                    <i class="fas fa-home"></i> Main Site
-                </a>
-                <button class="btn btn-secondary" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+            
+            <nav class="admin-menu">
+                <div class="menu-section">
+                    <h4>Management</h4>
+                    <a href="students.html" class="menu-item">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Students</span>
+                    </a>
+                    <a href="registration.html" class="menu-item">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Registration</span>
+                    </a>
+                </div>
+                
+                <div class="menu-section">
+                    <h4>Reports & Tools</h4>
+                    <a href="reports.html" class="menu-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Reports</span>
+                    </a>
+                </div>
+                
+                <div class="menu-section">
+                    <h4>System</h4>
+                    <a href="index.html" class="menu-item">
+                        <i class="fas fa-home"></i>
+                        <span>Main Site</span>
+                    </a>
+                    <button class="menu-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Calendar Area -->
+        <main class="main-content">
+            <div class="calendar-header">
+                <div class="calendar-nav">
+                    <button class="nav-btn" onclick="previousMonth()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 id="currentMonth">December 2024</h3>
+                    <button class="nav-btn" onclick="nextMonth()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-actions">
+                    <button class="btn btn-primary btn-sm" onclick="goToToday()">
+                        <i class="fas fa-calendar-day"></i> Today
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="addLesson()">
+                        <i class="fas fa-plus"></i> Add Lesson
+                    </button>
+                </div>
+            </div>
+            
+            <div class="calendar-container">
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be populated by JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Details Panel -->
+        <aside class="right-panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-info-circle"></i> Lesson Details</h3>
+                <button class="close-btn" onclick="closeDetails()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="panel-content" id="detailsContent">
+                <div class="no-selection">
+                    <i class="fas fa-calendar-check"></i>
+                    <p>Select a lesson to view details</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+        <!-- Edit Lesson Modal -->
+        <div id="editLessonModal" class="lesson-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-edit"></i> Edit Lesson</h3>
+                    <button class="close-btn" onclick="closeEditLessonModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editLessonForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editLessonStudent">Student *</label>
+                                <select id="editLessonStudent" name="student" required>
+                                    <option value="">Select a student</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editLessonSubject">Subject *</label>
+                                <input type="text" id="editLessonSubject" name="subject" required placeholder="e.g., Math, Science">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editLessonDate">Date *</label>
+                                <input type="date" id="editLessonDate" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editLessonLocation">Location *</label>
+                                <select id="editLessonLocation" name="location" required>
+                                    <option value="Online">Online</option>
+                                    <option value="In-Person">In-Person</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" id="editConnectionLinkGroup" style="display: none;">
+                            <label for="editLessonConnectionLink">Connection Link</label>
+                            <input type="url" id="editLessonConnectionLink" name="connectionLink" placeholder="https://meet.google.com/abc-defg-hij">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editLessonStartTime">Start Time *</label>
+                                <div class="time-input-container">
+                                    <select id="editLessonStartHour" name="startHour" required>
+                                        <option value="">Hour</option>
+                                        <option value="00">00</option>
+                                        <option value="01">01</option>
+                                        <option value="02">02</option>
+                                        <option value="03">03</option>
+                                        <option value="04">04</option>
+                                        <option value="05">05</option>
+                                        <option value="06">06</option>
+                                        <option value="07">07</option>
+                                        <option value="08">08</option>
+                                        <option value="09">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                        <option value="22">22</option>
+                                        <option value="23">23</option>
+                                    </select>
+                                    <span class="time-separator">:</span>
+                                    <select id="editLessonStartMinute" name="startMinute" required>
+                                        <option value="">Min</option>
+                                        <option value="00">00</option>
+                                        <option value="01">01</option>
+                                        <option value="02">02</option>
+                                        <option value="03">03</option>
+                                        <option value="04">04</option>
+                                        <option value="05">05</option>
+                                        <option value="06">06</option>
+                                        <option value="07">07</option>
+                                        <option value="08">08</option>
+                                        <option value="09">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                        <option value="22">22</option>
+                                        <option value="23">23</option>
+                                        <option value="24">24</option>
+                                        <option value="25">25</option>
+                                        <option value="26">26</option>
+                                        <option value="27">27</option>
+                                        <option value="28">28</option>
+                                        <option value="29">29</option>
+                                        <option value="30">30</option>
+                                        <option value="31">31</option>
+                                        <option value="32">32</option>
+                                        <option value="33">33</option>
+                                        <option value="34">34</option>
+                                        <option value="35">35</option>
+                                        <option value="36">36</option>
+                                        <option value="37">37</option>
+                                        <option value="38">38</option>
+                                        <option value="39">39</option>
+                                        <option value="40">40</option>
+                                        <option value="41">41</option>
+                                        <option value="42">42</option>
+                                        <option value="43">43</option>
+                                        <option value="44">44</option>
+                                        <option value="45">45</option>
+                                        <option value="46">46</option>
+                                        <option value="47">47</option>
+                                        <option value="48">48</option>
+                                        <option value="49">49</option>
+                                        <option value="50">50</option>
+                                        <option value="51">51</option>
+                                        <option value="52">52</option>
+                                        <option value="53">53</option>
+                                        <option value="54">54</option>
+                                        <option value="55">55</option>
+                                        <option value="56">56</option>
+                                        <option value="57">57</option>
+                                        <option value="58">58</option>
+                                        <option value="59">59</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editLessonEndTime">End Time *</label>
+                                <div class="time-input-container">
+                                    <select id="editLessonEndHour" name="endHour" required>
+                                        <option value="">Hour</option>
+                                        <option value="00">00</option>
+                                        <option value="01">01</option>
+                                        <option value="02">02</option>
+                                        <option value="03">03</option>
+                                        <option value="04">04</option>
+                                        <option value="05">05</option>
+                                        <option value="06">06</option>
+                                        <option value="07">07</option>
+                                        <option value="08">08</option>
+                                        <option value="09">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                        <option value="22">22</option>
+                                        <option value="23">23</option>
+                                    </select>
+                                    <span class="time-separator">:</span>
+                                    <select id="editLessonEndMinute" name="endMinute" required>
+                                        <option value="">Min</option>
+                                        <option value="00">00</option>
+                                        <option value="01">01</option>
+                                        <option value="02">02</option>
+                                        <option value="03">03</option>
+                                        <option value="04">04</option>
+                                        <option value="05">05</option>
+                                        <option value="06">06</option>
+                                        <option value="07">07</option>
+                                        <option value="08">08</option>
+                                        <option value="09">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                        <option value="22">22</option>
+                                        <option value="23">23</option>
+                                        <option value="24">24</option>
+                                        <option value="25">25</option>
+                                        <option value="26">26</option>
+                                        <option value="27">27</option>
+                                        <option value="28">28</option>
+                                        <option value="29">29</option>
+                                        <option value="30">30</option>
+                                        <option value="31">31</option>
+                                        <option value="32">32</option>
+                                        <option value="33">33</option>
+                                        <option value="34">34</option>
+                                        <option value="35">35</option>
+                                        <option value="36">36</option>
+                                        <option value="37">37</option>
+                                        <option value="38">38</option>
+                                        <option value="39">39</option>
+                                        <option value="40">40</option>
+                                        <option value="41">41</option>
+                                        <option value="42">42</option>
+                                        <option value="43">43</option>
+                                        <option value="44">44</option>
+                                        <option value="45">45</option>
+                                        <option value="46">46</option>
+                                        <option value="47">47</option>
+                                        <option value="48">48</option>
+                                        <option value="49">49</option>
+                                        <option value="50">50</option>
+                                        <option value="51">51</option>
+                                        <option value="52">52</option>
+                                        <option value="53">53</option>
+                                        <option value="54">54</option>
+                                        <option value="55">55</option>
+                                        <option value="56">56</option>
+                                        <option value="57">57</option>
+                                        <option value="58">58</option>
+                                        <option value="59">59</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editLessonTitle">Lesson Title *</label>
+                            <input type="text" id="editLessonTitle" name="title" required placeholder="Lesson title">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editLessonDescription">Description</label>
+                            <textarea id="editLessonDescription" name="description" rows="3" placeholder="Lesson objectives, topics to cover..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editLessonNotes">Notes</label>
+                            <textarea id="editLessonNotes" name="notes" rows="2" placeholder="Additional notes, materials needed..."></textarea>
+                        </div>
+                        
+                        <!-- Recurrence Options for Recurring Lessons -->
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="editIsRecurring" name="editIsRecurring">
+                                <span class="checkmark"></span>
+                                This is a recurring lesson
+                            </label>
+                        </div>
+                        
+                        <div id="editRecurringOptions" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="editRecurrenceType">Repeat</label>
+                                    <select id="editRecurrenceType" name="editRecurrenceType">
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editRecurrenceEndDate">End Date</label>
+                                    <input type="date" id="editRecurrenceEndDate" name="editRecurrenceEndDate" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="deleteLessonFromModal()">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveLessonFromModal()">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    <div id="addLessonModal" class="lesson-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-plus"></i> Add New Lesson</h3>
+                <button class="close-btn" onclick="closeAddLessonModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addLessonForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lessonStudent">Student *</label>
+                            <select id="lessonStudent" name="student" required>
+                                <option value="">Select a student</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="lessonSubject">Subject *</label>
+                            <input type="text" id="lessonSubject" name="subject" required placeholder="e.g., Math, Science">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lessonDate">Date *</label>
+                            <input type="date" id="lessonDate" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lessonLocation">Location *</label>
+                            <select id="lessonLocation" name="location" required>
+                                <option value="Online">Online</option>
+                                <option value="In-Person">In-Person</option>
+                                <option value="Hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="connectionLinkGroup" style="display: none;">
+                        <label for="lessonConnectionLink">Connection Link</label>
+                        <input type="url" id="lessonConnectionLink" name="connectionLink" placeholder="https://meet.google.com/abc-defg-hij">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lessonStartTime">Start Time *</label>
+                            <div class="time-input-container">
+                                <select id="lessonStartHour" name="startHour" required>
+                                    <option value="">Hour</option>
+                                    <option value="00">00</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                </select>
+                                <span class="time-separator">:</span>
+                                <select id="lessonStartMinute" name="startMinute" required>
+                                    <option value="">Min</option>
+                                    <option value="00">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lessonEndTime">End Time *</label>
+                            <div class="time-input-container">
+                                <select id="lessonEndHour" name="endHour" required>
+                                    <option value="">Hour</option>
+                                    <option value="00">00</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                </select>
+                                <span class="time-separator">:</span>
+                                <select id="lessonEndMinute" name="endMinute" required>
+                                    <option value="">Min</option>
+                                    <option value="00">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lessonTitle">Lesson Title *</label>
+                        <input type="text" id="lessonTitle" name="title" required placeholder="Lesson title">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lessonDescription">Description</label>
+                        <textarea id="lessonDescription" name="description" rows="3" placeholder="Lesson objectives, topics to cover..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lessonNotes">Notes</label>
+                        <textarea id="lessonNotes" name="notes" rows="2" placeholder="Additional notes, materials needed..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="isRecurring" name="isRecurring">
+                            <span class="checkmark"></span>
+                            This is a recurring lesson
+                        </label>
+                    </div>
+                    
+                    <div id="recurringOptions" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="recurrenceType">Repeat</label>
+                                <select id="recurrenceType" name="recurrenceType">
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="recurrenceEndDate">End Date</label>
+                                <input type="date" id="recurrenceEndDate" name="recurrenceEndDate" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddLessonModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createLesson()">
+                    <i class="fas fa-calendar-plus"></i> Create Lesson
                 </button>
             </div>
         </div>
-    </header>
-
-    <section class="admin-dashboard">
-        <div class="container">
-            <div class="dashboard-header">
-                <h2>Management System</h2>
-                <p>Access all administrative functions</p>
-            </div>
-
-            <div class="admin-grid">
-                <!-- Student Management -->
-                <div class="admin-card">
-                    <div class="card-icon">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Student Management</h3>
-                        <p>View, search, and manage all registered students</p>
-                        <div class="card-actions">
-                            <a href="students.html" class="btn btn-primary">
-                                <i class="fas fa-users"></i> View Students
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lesson Scheduling -->
-                <div class="admin-card">
-                    <div class="card-icon">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Lesson Scheduling</h3>
-                        <p>Schedule lessons for students and manage calendar</p>
-                        <div class="card-actions">
-                            <a href="lesson-scheduler.html" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Schedule Lesson
-                            </a>
-                            <a href="calendar.html" class="btn btn-outline">
-                                <i class="fas fa-calendar"></i> View Calendar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Registration Management -->
-                <div class="admin-card">
-                    <div class="card-icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Registration System</h3>
-                        <p>Student registration and enrollment management</p>
-                        <div class="card-actions">
-                            <a href="registration.html" class="btn btn-primary">
-                                <i class="fas fa-user-plus"></i> New Registration
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- System Stats -->
-                <div class="admin-card stats-card">
-                    <div class="card-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>System Statistics</h3>
-                        <div class="stats-grid" id="statsGrid">
-                            <div class="stat-item">
-                                <span class="stat-number" id="totalStudents">-</span>
-                                <span class="stat-label">Total Students</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" id="totalLessons">-</span>
-                                <span class="stat-label">Scheduled Lessons</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" id="recentRegistrations">-</span>
-                                <span class="stat-label">This Month</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="admin-card">
-                    <div class="card-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Quick Actions</h3>
-                        <p>Common administrative tasks</p>
-                        <div class="card-actions">
-                            <button class="btn btn-outline" onclick="clearAllData()">
-                                <i class="fas fa-trash"></i> Clear All Data
-                            </button>
-                            <button class="btn btn-outline" onclick="exportData()">
-                                <i class="fas fa-download"></i> Export Data
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reports -->
-                <div class="admin-card">
-                    <div class="card-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Reports</h3>
-                        <p>Generate printable lesson reports</p>
-                        <div class="card-actions">
-                            <a href="reports.html" class="btn btn-primary">
-                                <i class="fas fa-chart-bar"></i> View Reports
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </div>
 
     <script>
         // Check admin authentication
@@ -152,36 +569,646 @@
             window.location.href = 'admin.html';
         }
 
+        // Calendar state
+        let currentDate = new Date();
+        let lessons = [];
+        let students = [];
+        let selectedLesson = null;
+
         // Load dashboard statistics
         async function loadStats() {
             try {
-                // Load student stats
+                // Load students
                 const studentsResponse = await fetch('/api/students');
                 const studentsResult = await studentsResponse.json();
                 
                 if (studentsResult.success) {
-                    const students = studentsResult.students;
-                    document.getElementById('totalStudents').textContent = students.length;
-                    
-                    // Count recent registrations (this month)
-                    const thisMonth = new Date();
-                    thisMonth.setDate(1);
-                    const recentRegistrations = students.filter(s => new Date(s.created_at) >= thisMonth).length;
-                    document.getElementById('recentRegistrations').textContent = recentRegistrations;
+                    students = studentsResult.students;
+                    populateStudentDropdown();
                 }
 
-                // Load lesson stats
+                // Load lessons
                 const lessonsResponse = await fetch('/api/lessons');
                 const lessonsResult = await lessonsResponse.json();
                 
                 if (lessonsResult.success) {
-                    document.getElementById('totalLessons').textContent = lessonsResult.lessons.length;
+                    lessons = lessonsResult.lessons;
+                    renderCalendar();
                 }
             } catch (error) {
-                console.error('Error loading stats:', error);
+                console.error('Error loading data:', error);
             }
         }
 
+        // Load lessons from server
+        async function loadLessons() {
+            try {
+                const lessonsResponse = await fetch('/api/lessons');
+                const lessonsResult = await lessonsResponse.json();
+                
+                if (lessonsResult.success) {
+                    lessons = lessonsResult.lessons;
+                }
+            } catch (error) {
+                console.error('Error loading lessons:', error);
+            }
+        }
+
+        // Populate student dropdown
+        function populateStudentDropdown() {
+            const studentSelect = document.getElementById('lessonStudent');
+            studentSelect.innerHTML = '<option value="">Select a student</option>';
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.student_first_name} ${student.student_last_name}`;
+                studentSelect.appendChild(option);
+            });
+        }
+
+        // Calendar functions
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Update month display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            // Clear calendar
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            // Generate calendar days
+            for (let i = 0; i < 42; i++) {
+                const dayDate = new Date(startDate);
+                dayDate.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                if (dayDate.getMonth() !== month) {
+                    dayElement.classList.add('other-month');
+                }
+                
+                if (dayDate.toDateString() === new Date().toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                dayElement.innerHTML = `
+                    <div class="day-number">${dayDate.getDate()}</div>
+                    <div class="day-lessons" id="lessons-${dayDate.toISOString().split('T')[0]}"></div>
+                `;
+                
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Add lessons to calendar
+            addLessonsToCalendar();
+        }
+
+        function addLessonsToCalendar() {
+            lessons.forEach(lesson => {
+                const lessonDate = new Date(lesson.start_time);
+                const dateString = lessonDate.toISOString().split('T')[0];
+                const dayLessons = document.getElementById(`lessons-${dateString}`);
+                
+                if (dayLessons) {
+                    const lessonElement = document.createElement('div');
+                    lessonElement.className = 'lesson-item';
+                    lessonElement.innerHTML = `
+                        <div class="lesson-time">${lessonDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</div>
+                        <div class="lesson-student">${lesson.student_name}</div>
+                        <div class="lesson-subject">${lesson.subject}</div>
+                    `;
+                    lessonElement.onclick = () => openEditLessonModal(lesson);
+                    dayLessons.appendChild(lessonElement);
+                }
+            });
+        }
+
+        function openEditLessonModal(lesson) {
+            selectedLesson = lesson;
+            
+            // Populate student dropdown
+            populateEditStudentDropdown();
+            
+            // Prefill all fields with lesson data
+            document.getElementById('editLessonStudent').value = lesson.student_id;
+            document.getElementById('editLessonSubject').value = lesson.subject;
+            document.getElementById('editLessonTitle').value = lesson.title;
+            document.getElementById('editLessonDescription').value = lesson.description || '';
+            document.getElementById('editLessonNotes').value = lesson.notes || '';
+            document.getElementById('editLessonConnectionLink').value = lesson.connection_link || '';
+            
+            // Set date
+            const lessonDate = new Date(lesson.start_time);
+            document.getElementById('editLessonDate').value = lessonDate.toISOString().split('T')[0];
+            
+            // Set location and show/hide connection link
+            document.getElementById('editLessonLocation').value = lesson.location;
+            const connectionLinkGroup = document.getElementById('editConnectionLinkGroup');
+            connectionLinkGroup.style.display = lesson.location === 'Online' ? 'block' : 'none';
+            
+            // Set start and end times
+            const startTime = new Date(lesson.start_time);
+            const endTime = new Date(lesson.end_time);
+            
+            document.getElementById('editLessonStartHour').value = startTime.getHours().toString().padStart(2, '0');
+            document.getElementById('editLessonStartMinute').value = startTime.getMinutes().toString().padStart(2, '0');
+            document.getElementById('editLessonEndHour').value = endTime.getHours().toString().padStart(2, '0');
+            document.getElementById('editLessonEndMinute').value = endTime.getMinutes().toString().padStart(2, '0');
+            
+            // Set recurrence fields
+            const isRecurring = lesson.is_recurring === 1 || lesson.is_recurring === true;
+            document.getElementById('editIsRecurring').checked = isRecurring;
+            document.getElementById('editRecurrenceType').value = lesson.recurrence_type || 'weekly';
+            document.getElementById('editRecurrenceEndDate').value = lesson.end_date || '';
+            
+            // Show/hide recurrence options
+            const recurringOptions = document.getElementById('editRecurringOptions');
+            recurringOptions.style.display = isRecurring ? 'block' : 'none';
+            
+            // Show modal
+            document.getElementById('editLessonModal').style.display = 'flex';
+        }
+        
+        function populateEditStudentDropdown() {
+            const studentSelect = document.getElementById('editLessonStudent');
+            studentSelect.innerHTML = '<option value="">Select a student</option>';
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.student_first_name} ${student.student_last_name}`;
+                studentSelect.appendChild(option);
+            });
+        }
+        
+        function closeEditLessonModal() {
+            document.getElementById('editLessonModal').style.display = 'none';
+            selectedLesson = null;
+        }
+        
+        async function saveLessonFromModal() {
+            if (!selectedLesson) return;
+            
+            // Check if this is a recurring lesson
+            if (selectedLesson.is_recurring && selectedLesson.recurrence_group_id) {
+                // Show options for recurring lesson
+                showSaveOptionsModal();
+            } else {
+                // Single lesson - direct save
+                performSaveLesson();
+            }
+        }
+        
+        function showSaveOptionsModal() {
+            // Create a simple modal for save options
+            const modal = document.createElement('div');
+            modal.className = 'lesson-modal';
+            modal.style.display = 'flex';
+            modal.style.zIndex = '10002';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-save"></i> Save Changes</h3>
+                        <button class="close-btn" onclick="closeSaveOptionsModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>This lesson is part of a recurring series. What would you like to update?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" onclick="saveSingleLesson()">
+                            <i class="fas fa-calendar-day"></i> This Lesson Only
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveAllFutureLessons()">
+                            <i class="fas fa-calendar-times"></i> All Future Lessons
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function closeSaveOptionsModal() {
+            const modal = document.querySelector('.lesson-modal[style*="z-index: 10002"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function saveSingleLesson() {
+            closeSaveOptionsModal();
+            performSaveLesson();
+        }
+        
+        function saveAllFutureLessons() {
+            closeSaveOptionsModal();
+            performSaveAllFutureLessons();
+        }
+        
+        async function performSaveLesson() {
+            // Validate required fields
+            const title = document.getElementById('editLessonTitle').value;
+            const subject = document.getElementById('editLessonSubject').value;
+            const startHour = document.getElementById('editLessonStartHour').value;
+            const startMinute = document.getElementById('editLessonStartMinute').value;
+            const endHour = document.getElementById('editLessonEndHour').value;
+            const endMinute = document.getElementById('editLessonEndMinute').value;
+            
+            if (!title || !subject || !startHour || !startMinute || !endHour || !endMinute) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Validate time order
+            const startTime = new Date(`${document.getElementById('editLessonDate').value}T${startHour}:${startMinute}`);
+            const endTime = new Date(`${document.getElementById('editLessonDate').value}T${endHour}:${endMinute}`);
+            
+            if (endTime <= startTime) {
+                alert('End time must be after start time');
+                return;
+            }
+            
+            // Calculate duration
+            const duration = Math.round((endTime - startTime) / (1000 * 60));
+            
+            // Prepare update data
+            const updateData = {
+                title: title,
+                subject: subject,
+                start_time: startTime.toISOString(),
+                end_time: endTime.toISOString(),
+                duration: duration,
+                location: document.getElementById('editLessonLocation').value,
+                description: document.getElementById('editLessonDescription').value,
+                notes: document.getElementById('editLessonNotes').value,
+                connection_link: document.getElementById('editLessonConnectionLink').value,
+                is_recurring: document.getElementById('editIsRecurring').checked,
+                recurrence_type: document.getElementById('editRecurrenceType').value,
+                end_date: document.getElementById('editRecurrenceEndDate').value
+            };
+            
+            try {
+                const response = await fetch(`/api/lessons/${selectedLesson.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update selected lesson data
+                    Object.assign(selectedLesson, updateData);
+                    
+                    // Update lesson in the lessons array
+                    const lessonIndex = lessons.findIndex(l => l.id === selectedLesson.id);
+                    if (lessonIndex !== -1) {
+                        Object.assign(lessons[lessonIndex], updateData);
+                    }
+                    
+                    // Refresh calendar
+                    renderCalendar();
+                    
+                    // Close modal
+                    closeEditLessonModal();
+                } else {
+                    alert('Failed to update lesson: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error updating lesson:', error);
+                alert('Error updating lesson. Please try again.');
+            }
+        }
+        
+        async function performSaveAllFutureLessons() {
+            // Validate required fields
+            const title = document.getElementById('editLessonTitle').value;
+            const subject = document.getElementById('editLessonSubject').value;
+            const startHour = document.getElementById('editLessonStartHour').value;
+            const startMinute = document.getElementById('editLessonStartMinute').value;
+            const endHour = document.getElementById('editLessonEndHour').value;
+            const endMinute = document.getElementById('editLessonEndMinute').value;
+            
+            if (!title || !subject || !startHour || !startMinute || !endHour || !endMinute) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Validate time order
+            const startTime = new Date(`${document.getElementById('editLessonDate').value}T${startHour}:${startMinute}`);
+            const endTime = new Date(`${document.getElementById('editLessonDate').value}T${endHour}:${endMinute}`);
+            
+            if (endTime <= startTime) {
+                alert('End time must be after start time');
+                return;
+            }
+            
+            // Calculate duration
+            const duration = Math.round((endTime - startTime) / (1000 * 60));
+            
+            // Prepare update data
+            const updateData = {
+                title: title,
+                subject: subject,
+                start_time: startTime.toISOString(),
+                end_time: endTime.toISOString(),
+                duration: duration,
+                location: document.getElementById('editLessonLocation').value,
+                description: document.getElementById('editLessonDescription').value,
+                notes: document.getElementById('editLessonNotes').value,
+                connection_link: document.getElementById('editLessonConnectionLink').value,
+                is_recurring: document.getElementById('editIsRecurring').checked,
+                recurrence_type: document.getElementById('editRecurrenceType').value,
+                end_date: document.getElementById('editRecurrenceEndDate').value
+            };
+            
+            try {
+                // Use the series update endpoint to update all lessons in the series
+                const response = await fetch(`/api/lessons/series/${selectedLesson.recurrence_group_id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Refresh the calendar
+                    await loadLessons();
+                    renderCalendar();
+                    closeEditLessonModal();
+                } else {
+                    alert('Failed to update lesson series: ' + result.message);
+                }
+                
+            } catch (error) {
+                console.error('Error updating lesson series:', error);
+                alert('Error updating lesson series. Please try again.');
+            }
+        }
+        
+        function deleteLessonFromModal() {
+            if (!selectedLesson) return;
+            
+            // Check if this is a recurring lesson
+            if (selectedLesson.is_recurring && selectedLesson.recurrence_group_id) {
+                // Show options for recurring lesson
+                showDeleteOptionsModal();
+            } else {
+                // Single lesson - direct deletion
+                confirmAndDeleteLesson();
+            }
+        }
+        
+        function showDeleteOptionsModal() {
+            // Create a simple modal for delete options
+            const modal = document.createElement('div');
+            modal.className = 'lesson-modal';
+            modal.style.display = 'flex';
+            modal.style.zIndex = '10002';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-trash"></i> Delete Lesson</h3>
+                        <button class="close-btn" onclick="closeDeleteOptionsModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>This lesson is part of a recurring series. What would you like to delete?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" onclick="deleteSingleLesson()">
+                            <i class="fas fa-calendar-day"></i> This Lesson Only
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="deleteAllFutureLessons()">
+                            <i class="fas fa-calendar-times"></i> All Future Lessons
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function closeDeleteOptionsModal() {
+            const modal = document.querySelector('.lesson-modal[style*="z-index: 10002"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function deleteSingleLesson() {
+            closeDeleteOptionsModal();
+            confirmAndDeleteLesson();
+        }
+        
+        function deleteAllFutureLessons() {
+            closeDeleteOptionsModal();
+            performDeleteAllFutureLessons();
+        }
+        
+        function confirmAndDeleteLesson() {
+            performDeleteLesson();
+        }
+        
+        function confirmAndDeleteAllFutureLessons() {
+            performDeleteAllFutureLessons();
+        }
+        
+        function performDeleteLesson() {
+            fetch(`/api/lessons/${selectedLesson.id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    // Reload lessons from server to ensure calendar shows correct data
+                    loadStats();
+                    
+                    // Close modal
+                    closeEditLessonModal();
+                } else {
+                    alert('Failed to delete lesson: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting lesson:', error);
+                alert('Error deleting lesson. Please try again.');
+            });
+        }
+        
+        function performDeleteAllFutureLessons() {
+            if (!selectedLesson) {
+                alert('No lesson selected for deletion');
+                return;
+            }
+            
+            fetch(`/api/lessons/${selectedLesson.id}?deleteAll=true`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    // Reload lessons from server to ensure calendar shows correct data
+                    loadStats();
+                    
+                    // Close modal
+                    closeEditLessonModal();
+                } else {
+                    alert('Failed to delete lessons: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting lessons:', error);
+                alert('Error deleting lessons. Please try again.');
+            });
+        }
+        
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            renderCalendar();
+        }
+
+        function addLesson() {
+            // Set default date to today
+            const today = new Date();
+            document.getElementById('lessonDate').value = today.toISOString().split('T')[0];
+            
+            // Show modal
+            document.getElementById('addLessonModal').style.display = 'flex';
+        }
+
+        function closeAddLessonModal() {
+            document.getElementById('addLessonModal').style.display = 'none';
+            document.getElementById('addLessonForm').reset();
+            document.getElementById('recurringOptions').style.display = 'none';
+        }
+
+        function createLesson() {
+            const form = document.getElementById('addLessonForm');
+            const formData = new FormData(form);
+            
+            // Validate required fields
+            const student = document.getElementById('lessonStudent').value;
+            const subject = document.getElementById('lessonSubject').value;
+            const date = document.getElementById('lessonDate').value;
+            const startHour = document.getElementById('lessonStartHour').value;
+            const startMinute = document.getElementById('lessonStartMinute').value;
+            const endHour = document.getElementById('lessonEndHour').value;
+            const endMinute = document.getElementById('lessonEndMinute').value;
+            const title = document.getElementById('lessonTitle').value;
+            
+            if (!student || !subject || !date || !startHour || !startMinute || !endHour || !endMinute || !title) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Validate that end time is after start time
+            const startTime = new Date(`${date}T${startHour}:${startMinute}`);
+            const endTime = new Date(`${date}T${endHour}:${endMinute}`);
+            
+            if (endTime <= startTime) {
+                alert('End time must be after start time');
+                return;
+            }
+            
+            // Calculate duration in minutes
+            const duration = Math.round((endTime - startTime) / (1000 * 60));
+            
+            // Combine times into strings
+            const startTimeString = `${startHour}:${startMinute}`;
+            const endTimeString = `${endHour}:${endMinute}`;
+            
+            // Find selected student
+            const selectedStudent = students.find(s => s.id == student);
+            if (!selectedStudent) {
+                alert('Please select a valid student');
+                return;
+            }
+            
+            // Prepare lesson data
+            const lessonData = {
+                student_id: student,
+                student_name: `${selectedStudent.student_first_name} ${selectedStudent.student_last_name}`,
+                title: title,
+                subject: subject,
+                start_time: startTime.toISOString(),
+                end_time: endTime.toISOString(),
+                duration: duration,
+                location: document.getElementById('lessonLocation').value,
+                description: document.getElementById('lessonDescription').value,
+                notes: document.getElementById('lessonNotes').value,
+                connection_link: document.getElementById('lessonConnectionLink').value,
+                is_recurring: document.getElementById('isRecurring').checked,
+                recurrenceData: {
+                    recurrence_type: document.getElementById('recurrenceType').value,
+                    end_date: document.getElementById('recurrenceEndDate').value
+                }
+            };
+            
+            // Send to server
+            fetch('/api/lessons', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(lessonData)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    closeAddLessonModal();
+                    loadStats(); // Reload data and calendar
+                } else {
+                    alert('Failed to create lesson: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error creating lesson:', error);
+                alert('Error creating lesson. Please try again.');
+            });
+        }
+
+        // Old inline editing functions removed - now using modal approach
+        
         function logout() {
             sessionStorage.removeItem('adminLoggedIn');
             window.location.href = 'admin.html';
@@ -190,18 +1217,84 @@
         function clearAllData() {
             if (confirm('Are you sure you want to clear ALL data? This action cannot be undone!')) {
                 if (confirm('This will delete all students, lessons, and registrations. Are you absolutely sure?')) {
-                    // Redirect to clear data script
-                    window.location.href = 'quick-clear.js';
+                    alert('Clear data functionality will be implemented.');
                 }
             }
         }
 
-        function exportData() {
-            alert('Export functionality will be implemented in a future update.');
-        }
+        // Make functions globally accessible
+        window.openEditLessonModal = openEditLessonModal;
+        window.closeEditLessonModal = closeEditLessonModal;
+        window.saveLessonFromModal = saveLessonFromModal;
+        window.deleteLessonFromModal = deleteLessonFromModal;
+        window.closeDeleteOptionsModal = closeDeleteOptionsModal;
+        window.deleteSingleLesson = deleteSingleLesson;
+        window.deleteAllFutureLessons = deleteAllFutureLessons;
+        window.closeSaveOptionsModal = closeSaveOptionsModal;
+        window.saveSingleLesson = saveSingleLesson;
+        window.saveAllFutureLessons = saveAllFutureLessons;
 
-        // Load stats when page loads
-        document.addEventListener('DOMContentLoaded', loadStats);
+        // Handle recurring checkbox
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            
+            // Add event listener for recurring checkbox
+            document.getElementById('isRecurring').addEventListener('change', function() {
+                const recurringOptions = document.getElementById('recurringOptions');
+                recurringOptions.style.display = this.checked ? 'block' : 'none';
+            });
+            
+            // Add event listener for location change to show/hide connection link
+            document.getElementById('lessonLocation').addEventListener('change', function() {
+                const connectionLinkGroup = document.getElementById('connectionLinkGroup');
+                connectionLinkGroup.style.display = this.value === 'Online' ? 'block' : 'none';
+            });
+            
+            // Add event listener for edit modal location change
+            document.getElementById('editLessonLocation').addEventListener('change', function() {
+                const editConnectionLinkGroup = document.getElementById('editConnectionLinkGroup');
+                editConnectionLinkGroup.style.display = this.value === 'Online' ? 'block' : 'none';
+            });
+            
+            // Add event listener for edit modal recurring checkbox
+            document.getElementById('editIsRecurring').addEventListener('change', function() {
+                const editRecurringOptions = document.getElementById('editRecurringOptions');
+                editRecurringOptions.style.display = this.checked ? 'block' : 'none';
+            });
+            
+            // Add event listener for student selection to auto-fill title and subject
+            document.getElementById('lessonStudent').addEventListener('change', function() {
+                const studentId = this.value;
+                if (studentId) {
+                    const student = students.find(s => s.id == studentId);
+                    if (student) {
+                        const studentName = `${student.student_first_name} ${student.student_last_name}`;
+                        
+                        // Prefill subject from student profile
+                        const studentSubject = student.subjects || 'Tutoring';
+                        document.getElementById('lessonSubject').value = studentSubject;
+                        
+                        // Update title with prefilled subject
+                        document.getElementById('lessonTitle').value = `${studentName} - ${studentSubject}`;
+                    }
+                }
+            });
+            
+            // Add event listener for subject change to update title
+            document.getElementById('lessonSubject').addEventListener('input', function() {
+                const studentId = document.getElementById('lessonStudent').value;
+                if (studentId) {
+                    const student = students.find(s => s.id == studentId);
+                    if (student) {
+                        const studentName = `${student.student_first_name} ${student.student_last_name}`;
+                        const subject = this.value || 'Tutoring';
+                        document.getElementById('lessonTitle').value = `${studentName} - ${subject}`;
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
+
+

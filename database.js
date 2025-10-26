@@ -39,6 +39,7 @@ class Database {
                 recurrence_type TEXT,
                 occurrence_number INTEGER,
                 total_occurrences INTEGER,
+                end_date TEXT,
                 recurrence_group_id TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -399,9 +400,9 @@ class Database {
                 INSERT INTO lessons (
                     student_id, student_name, title, subject,
                     start_time, end_time, duration, location,
-                    description, notes, reminder, is_recurring, recurrence_type,
-                    occurrence_number, total_occurrences, recurrence_group_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    description, notes, connection_link, reminder, is_recurring, recurrence_type,
+                    occurrence_number, total_occurrences, end_date, recurrence_group_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const params = [
@@ -415,11 +416,13 @@ class Database {
                 lessonData.location,
                 lessonData.description || null,
                 lessonData.notes || null,
+                lessonData.connection_link || null,
                 lessonData.reminder || 0,
                 lessonData.is_recurring ? 1 : 0,
                 lessonData.recurrence_type || null,
                 lessonData.occurrence_number || null,
                 lessonData.total_occurrences || null,
+                lessonData.end_date || null,
                 lessonData.recurrence_group_id || null
             ];
 
@@ -475,7 +478,8 @@ class Database {
             const sql = `
                 UPDATE lessons 
                 SET title = ?, subject = ?, start_time = ?, end_time = ?,
-                    duration = ?, location = ?, description = ?, reminder = ?,
+                    duration = ?, location = ?, description = ?, notes = ?, connection_link = ?, reminder = ?,
+                    is_recurring = ?, recurrence_type = ?, total_occurrences = ?, end_date = ?,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?
             `;
@@ -488,7 +492,13 @@ class Database {
                 lessonData.duration,
                 lessonData.location,
                 lessonData.description || null,
+                lessonData.notes || null,
+                lessonData.connection_link || null,
                 lessonData.reminder || 0,
+                lessonData.is_recurring ? 1 : 0,
+                lessonData.recurrence_type || null,
+                lessonData.total_occurrences || null,
+                lessonData.end_date || null,
                 id
             ];
 
@@ -572,6 +582,44 @@ class Database {
             this.db.run(sql, values, function(err) {
                 if (err) {
                     console.error('Error updating student:', err.message);
+                    reject(err);
+                } else {
+                    resolve({ changes: this.changes });
+                }
+            });
+        });
+    }
+
+    getLessonsByRecurrenceGroup(recurrenceGroupId) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+                SELECT * FROM lessons 
+                WHERE recurrence_group_id = ? 
+                ORDER BY start_time ASC
+            `;
+
+            this.db.all(sql, [recurrenceGroupId], (err, rows) => {
+                if (err) {
+                    console.error('Error fetching lessons by recurrence group:', err.message);
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+
+    deleteFutureLessonsInGroup(recurrenceGroupId, cutoffTime) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+                DELETE FROM lessons 
+                WHERE recurrence_group_id = ? 
+                AND start_time >= ?
+            `;
+
+            this.db.run(sql, [recurrenceGroupId, cutoffTime], function(err) {
+                if (err) {
+                    console.error('Error deleting future lessons in group:', err.message);
                     reject(err);
                 } else {
                     resolve({ changes: this.changes });

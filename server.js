@@ -119,12 +119,26 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
+// Start server with error handling
+const server = app.listen(PORT, () => {
   console.log(`🚀 Easy STEM School server running on port ${PORT}`);
   console.log(`📧 Email configured: ${process.env.EMAIL_USER ? 'Yes' : 'No'}`);
   console.log(`🌐 Access your site at: http://localhost:${PORT}`);
   console.log(`📝 Registration page: http://localhost:${PORT}/registration`);
+});
+
+// Handle port already in use error
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`❌ Port ${PORT} is already in use.`);
+    console.log(`💡 Try one of these solutions:`);
+    console.log(`   1. Kill existing server: pkill -f "node server.js"`);
+    console.log(`   2. Use different port: PORT=3001 node server.js`);
+    console.log(`   3. Check what's using port ${PORT}: lsof -i :${PORT}`);
+  } else {
+    console.error('❌ Server error:', err);
+  }
+  process.exit(1);
 });
 
 module.exports = app;
