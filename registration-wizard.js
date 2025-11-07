@@ -33,23 +33,7 @@ class RegistrationWizard {
         form.addEventListener('submit', (e) => this.submitForm(e));
 
         // Handle liability release checkbox to enable/disable submit button
-        const liabilityReleaseCheckbox = document.getElementById('liabilityRelease');
-        const submitBtn = document.getElementById('submitBtn');
-        
-        if (liabilityReleaseCheckbox && submitBtn) {
-            liabilityReleaseCheckbox.addEventListener('change', (e) => {
-                submitBtn.disabled = !e.target.checked;
-                
-                // Update button styling based on state
-                if (e.target.checked) {
-                    submitBtn.classList.remove('btn-secondary');
-                    submitBtn.classList.add('btn-success');
-                } else {
-                    submitBtn.classList.remove('btn-success');
-                    submitBtn.classList.add('btn-secondary');
-                }
-            });
-        }
+        this.setupLiabilityReleaseHandler();
 
         // Handle emergency contact "same as parent" checkbox
         const sameAsParentCheckbox = document.getElementById('sameAsParent');
@@ -61,6 +45,19 @@ class RegistrationWizard {
             
             sameAsParentCheckbox.addEventListener('change', (e) => {
                 this.updateEmergencyContactFields(e.target.checked);
+            });
+            
+            // Also listen for changes to parent fields to auto-update emergency contact if "same as parent" is checked
+            const parentFields = ['parentFullName', 'parentPhone', 'parentEmail', 'parentAddress'];
+            parentFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', () => {
+                        if (sameAsParentCheckbox.checked) {
+                            this.updateEmergencyContactFields(true);
+                        }
+                    });
+                }
             });
         }
     }
@@ -75,20 +72,68 @@ class RegistrationWizard {
         }
         
         if (sameAsParent) {
-            emergencyContactFields.style.display = 'none';
-            // Remove required from emergency contact fields
-            emergencyContactFields.querySelectorAll('input, select').forEach(field => {
-                field.required = false;
-                field.value = '';
-            });
-        } else {
+            // Pre-fill emergency contact fields with parent information
+            const parentFullName = document.getElementById('parentFullName')?.value || '';
+            const parentPhone = document.getElementById('parentPhone')?.value || '';
+            const parentEmail = document.getElementById('parentEmail')?.value || '';
+            const parentAddress = document.getElementById('parentAddress')?.value || '';
+            
+            // Pre-fill emergency contact fields
+            const emergencyName = document.getElementById('emergencyName');
+            const emergencyPhone = document.getElementById('emergencyPhone');
+            const emergencyEmail = document.getElementById('emergencyEmail');
+            const emergencyAddress = document.getElementById('emergencyAddress');
+            const emergencyRelationship = document.getElementById('emergencyRelationship');
+            
+            if (emergencyName) {
+                emergencyName.value = parentFullName;
+                emergencyName.readOnly = true;
+            }
+            if (emergencyPhone) {
+                emergencyPhone.value = parentPhone;
+                emergencyPhone.readOnly = true;
+            }
+            if (emergencyEmail) {
+                emergencyEmail.value = parentEmail;
+            }
+            if (emergencyAddress) {
+                emergencyAddress.value = parentAddress;
+            }
+            if (emergencyRelationship) {
+                emergencyRelationship.value = 'Parent';
+                emergencyRelationship.disabled = true;
+            }
+            
+            // Keep fields visible but readonly
             emergencyContactFields.style.display = 'block';
-            // Make emergency contact fields required
-            emergencyContactFields.querySelectorAll('input, select').forEach(field => {
-                if (field.name !== 'emergencyEmail' && field.name !== 'emergencyAddress') {
-                    field.required = true;
-                }
-            });
+        } else {
+            // Clear and enable fields
+            const emergencyName = document.getElementById('emergencyName');
+            const emergencyPhone = document.getElementById('emergencyPhone');
+            const emergencyEmail = document.getElementById('emergencyEmail');
+            const emergencyAddress = document.getElementById('emergencyAddress');
+            const emergencyRelationship = document.getElementById('emergencyRelationship');
+            
+            if (emergencyName) {
+                emergencyName.value = '';
+                emergencyName.readOnly = false;
+            }
+            if (emergencyPhone) {
+                emergencyPhone.value = '';
+                emergencyPhone.readOnly = false;
+            }
+            if (emergencyEmail) {
+                emergencyEmail.value = '';
+            }
+            if (emergencyAddress) {
+                emergencyAddress.value = '';
+            }
+            if (emergencyRelationship) {
+                emergencyRelationship.value = '';
+                emergencyRelationship.disabled = false;
+            }
+            
+            emergencyContactFields.style.display = 'block';
         }
     }
 
@@ -142,40 +187,21 @@ class RegistrationWizard {
             }
         });
 
-        // Special validation for stage 3 (subjects)
-        if (this.currentStage === 3) {
-            const subjectsField = currentStageElement.querySelector('input[name="subjects"]');
-            
-            if (subjectsField && !subjectsField.value.trim()) {
-                subjectsField.style.borderColor = '#dc3545';
-                isValid = false;
-                console.log('Subjects field is required');
-            }
-        }
-
         // Special validation for stage 4 (emergency contact)
         if (this.currentStage === 4) {
             const sameAsParentCheckbox = document.getElementById('sameAsParent');
-            if (sameAsParentCheckbox && !sameAsParentCheckbox.checked) {
-                // Emergency contact fields should be required
-                const emergencyName = document.getElementById('emergencyName');
-                const emergencyRelationship = document.getElementById('emergencyRelationship');
-                const emergencyPhone = document.getElementById('emergencyPhone');
+            if (sameAsParentCheckbox && sameAsParentCheckbox.checked) {
+                // If same as parent, ensure parent fields are filled
+                const parentFullName = document.getElementById('parentFullName');
+                const parentPhone = document.getElementById('parentPhone');
                 
-                if (emergencyName && !emergencyName.value.trim()) {
-                    emergencyName.style.borderColor = '#dc3545';
+                if (!parentFullName || !parentFullName.value.trim()) {
                     isValid = false;
-                    console.log('Emergency name is required');
+                    console.log('Parent name is required for emergency contact');
                 }
-                if (emergencyRelationship && !emergencyRelationship.value.trim()) {
-                    emergencyRelationship.style.borderColor = '#dc3545';
+                if (!parentPhone || !parentPhone.value.trim()) {
                     isValid = false;
-                    console.log('Emergency relationship is required');
-                }
-                if (emergencyPhone && !emergencyPhone.value.trim()) {
-                    emergencyPhone.style.borderColor = '#dc3545';
-                    isValid = false;
-                    console.log('Emergency phone is required');
+                    console.log('Parent phone is required for emergency contact');
                 }
             }
         }
@@ -293,7 +319,13 @@ class RegistrationWizard {
 
     loadStageData() {
         const stageData = this.formData[`stage${this.currentStage}`];
-        if (!stageData) return;
+        if (!stageData) {
+            // If no saved data and on stage 5, ensure submit button is disabled
+            if (this.currentStage === 5) {
+                this.updateSubmitButtonState();
+            }
+            return;
+        }
 
         const currentStageElement = document.querySelector(`[data-stage="${this.currentStage}"]`);
         
@@ -315,8 +347,16 @@ class RegistrationWizard {
         if (this.currentStage === 4) {
             const sameAsParentCheckbox = document.getElementById('sameAsParent');
             if (sameAsParentCheckbox) {
-                this.updateEmergencyContactFields(sameAsParentCheckbox.checked);
+                // Delay slightly to ensure parent data is loaded first
+                setTimeout(() => {
+                    this.updateEmergencyContactFields(sameAsParentCheckbox.checked);
+                }, 50);
             }
+        }
+        
+        // Update submit button state when loading stage 5
+        if (this.currentStage === 5) {
+            this.updateSubmitButtonState();
         }
     }
 
@@ -361,8 +401,44 @@ class RegistrationWizard {
         // Show/hide Next/Submit buttons
         if (this.currentStage === this.totalStages && submitBtn) {
             submitBtn.style.display = 'inline-flex';
+            // Update submit button state based on liability release checkbox
+            this.updateSubmitButtonState();
         } else if (nextBtn) {
             nextBtn.style.display = 'inline-flex';
+        }
+    }
+
+    setupLiabilityReleaseHandler() {
+        // Use event delegation since checkbox may not exist when page loads
+        const form = document.getElementById('registrationWizard');
+        
+        form.addEventListener('change', (e) => {
+            if (e.target.id === 'liabilityRelease') {
+                this.updateSubmitButtonState();
+            }
+        });
+    }
+
+    updateSubmitButtonState() {
+        const liabilityReleaseCheckbox = document.getElementById('liabilityRelease');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (liabilityReleaseCheckbox && submitBtn) {
+            const isChecked = liabilityReleaseCheckbox.checked;
+            submitBtn.disabled = !isChecked;
+            
+            // Update button styling based on state
+            if (isChecked) {
+                submitBtn.classList.remove('btn-secondary');
+                submitBtn.classList.add('btn-primary');
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            } else {
+                submitBtn.classList.remove('btn-primary');
+                submitBtn.classList.add('btn-secondary');
+                submitBtn.style.opacity = '0.6';
+                submitBtn.style.cursor = 'not-allowed';
+            }
         }
     }
 
@@ -436,32 +512,13 @@ class RegistrationWizard {
     }
 
     showSuccessPage() {
-        // Hide the entire registration section
-        const registrationSection = document.querySelector('.registration-section');
-        if (registrationSection) {
-            registrationSection.style.display = 'none';
-        }
-        
-        // Hide the header/navigation if it exists
-        const header = document.querySelector('header');
-        if (header) {
-            header.style.display = 'none';
-        }
-        
-        // Show the success page
+        // Show the success page as overlay
         const successPage = document.getElementById('successPage');
         if (successPage) {
-            successPage.style.display = 'block';
+            successPage.style.display = 'flex';
+            // Scroll to top to show success card
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-        // Hide the footer temporarily
-        const footer = document.querySelector('.footer');
-        if (footer) {
-            footer.style.display = 'none';
-        }
-        
-        // Scroll to top
-        window.scrollTo(0, 0);
     }
 
     prepareFinalData() {
@@ -525,5 +582,11 @@ console.log('Registration wizard loaded successfully!');
 
 // Function to close registration and return to home page
 function closeRegistration() {
+    // Hide the success page overlay
+    const successPage = document.getElementById('successPage');
+    if (successPage) {
+        successPage.style.display = 'none';
+    }
+    // Redirect to home page
     window.location.href = 'index.html';
 }

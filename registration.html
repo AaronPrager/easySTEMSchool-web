@@ -4,85 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Registration | Easy STEM School</title>
-    <link rel="stylesheet" href="styles.css?v=15">
+    <link rel="stylesheet" href="styles.css?v=17">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Admin Navigation -->
-    <header class="admin-header">
-        <div class="container">
-            <div class="admin-logo">
-                <h1><i class="fas fa-user-plus"></i> Student Registration</h1>
-                <p>Easy STEM School Management</p>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo" alt="Easy STEM School Logo" class="logo-image">
+                <a href="index.html">Easy STEM School</a>
             </div>
-            <div class="admin-nav">
-                <a href="admin-dashboard.html" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-                <a href="students.html" class="nav-link">
-                    <i class="fas fa-users"></i> Students
-                </a>
-                <a href="lesson-scheduler.html" class="nav-link">
-                    <i class="fas fa-calendar-plus"></i> Schedule
-                </a>
-                <a href="calendar.html" class="nav-link">
-                    <i class="fas fa-calendar"></i> Calendar
-                </a>
-                <a href="index.html" class="nav-link">
-                    <i class="fas fa-home"></i> Main Site
-                </a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#team" class="nav-link">Team</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#services" class="nav-link">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#testimonials" class="nav-link">Testimonials</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a href="registration.html" class="nav-link active">Register</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
             </div>
         </div>
-    </header>
+    </nav>
 
     <!-- Registration Wizard -->
-    <section class="registration-wizard">
+    <section class="registration-wizard" style="padding-top: 100px;">
         <div class="container">
-            <div class="wizard-header">
-                <h1>Student Registration</h1>
-                <p class="wizard-subtitle">Join our personalized STEM education program</p>
-                
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
+            <div class="registration-card-wrapper">
+                <!-- Header Card -->
+                <div class="wizard-header-card">
+                    <div class="wizard-header-content">
+                        <h1>Student Registration</h1>
+                        <p class="wizard-subtitle">Join our personalized STEM education program</p>
                     </div>
-                    <div class="progress-steps">
-                        <div class="step active" data-step="1">
-                            <div class="step-number">1</div>
-                            <div class="step-label">Student Info</div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
                         </div>
-                        <div class="step" data-step="2">
-                            <div class="step-number">2</div>
-                            <div class="step-label">Parent Info</div>
-                        </div>
-                        <div class="step" data-step="3">
-                            <div class="step-number">3</div>
-                            <div class="step-label">Academic Needs</div>
-                        </div>
-                        <div class="step" data-step="4">
-                            <div class="step-number">4</div>
-                            <div class="step-label">Emergency Contact</div>
-                        </div>
-                        <div class="step" data-step="5">
-                            <div class="step-number">5</div>
-                            <div class="step-label">Consent</div>
+                        <div class="progress-steps">
+                            <div class="step active" data-step="1">
+                                <div class="step-number">1</div>
+                                <div class="step-label">Student Info</div>
+                            </div>
+                            <div class="step" data-step="2">
+                                <div class="step-number">2</div>
+                                <div class="step-label">Parent Info</div>
+                            </div>
+                            <div class="step" data-step="3">
+                                <div class="step-number">3</div>
+                                <div class="step-label">Academic Needs</div>
+                            </div>
+                            <div class="step" data-step="4">
+                                <div class="step-number">4</div>
+                                <div class="step-label">Emergency Contact</div>
+                            </div>
+                            <div class="step" data-step="5">
+                                <div class="step-number">5</div>
+                                <div class="step-label">Consent</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Registration Form Container -->
-            <div class="wizard-container">
-                <form id="registrationWizard" class="wizard-form">
+                <!-- Registration Form Container -->
+                <div class="wizard-container">
+                    <form id="registrationWizard" class="wizard-form">
                     
                     <!-- Stage 1: Student Information -->
                     <div class="wizard-stage active" data-stage="1">
-                        <div class="stage-header">
-                            <h2><i class="fas fa-graduation-cap"></i> Student Information</h2>
-                            <p>Please provide information about the student who will be participating in our programs.</p>
-                        </div>
+                        <div class="wizard-card">
+                            <div class="stage-header">
+                                <div class="stage-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <h2>Student Information</h2>
+                                    <p>Please provide information about the student who will be participating in our programs.</p>
+                                </div>
+                            </div>
                         
                         <div class="form-section">
                             <div class="form-row">
@@ -132,25 +150,32 @@
                             </div>
                         </div>
                         
-                        <!-- Navigation Buttons -->
-                        <div class="wizard-navigation">
-                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
-                                <i class="fas fa-arrow-left"></i>
-                                Previous
-                            </button>
-                            <button type="button" class="btn btn-primary" id="nextBtn">
-                                Next
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
+                            <!-- Navigation Buttons -->
+                            <div class="wizard-navigation">
+                                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" id="nextBtn">
+                                    Next
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Stage 2: Parent Information -->
                     <div class="wizard-stage" data-stage="2">
-                        <div class="stage-header">
-                            <h2><i class="fas fa-user"></i> Parent/Guardian Information</h2>
-                            <p>Please provide your contact information as the primary contact for your child.</p>
-                        </div>
+                        <div class="wizard-card">
+                            <div class="stage-header">
+                                <div class="stage-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <h2>Parent/Guardian Information</h2>
+                                    <p>Please provide your contact information as the primary contact for your child.</p>
+                                </div>
+                            </div>
                         
                         <div class="form-section">
                             <div class="form-group">
@@ -173,25 +198,32 @@
                             </div>
                         </div>
                         
-                        <!-- Navigation Buttons -->
-                        <div class="wizard-navigation">
-                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
-                                <i class="fas fa-arrow-left"></i>
-                                Previous
-                            </button>
-                            <button type="button" class="btn btn-primary" id="nextBtn">
-                                Next
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
+                            <!-- Navigation Buttons -->
+                            <div class="wizard-navigation">
+                                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" id="nextBtn">
+                                    Next
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Stage 3: Academic Needs -->
                     <div class="wizard-stage" data-stage="3">
-                        <div class="stage-header">
-                            <h2><i class="fas fa-book"></i> Academic Needs</h2>
-                            <p>Tell us about your child's academic goals and tutoring needs.</p>
-                        </div>
+                        <div class="wizard-card">
+                            <div class="stage-header">
+                                <div class="stage-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div>
+                                    <h2>Academic Needs</h2>
+                                    <p>Tell us about your child's academic goals and tutoring needs.</p>
+                                </div>
+                            </div>
                         
                         <div class="form-section">
                             <div class="form-group">
@@ -225,25 +257,32 @@
                             </div>
                         </div>
                         
-                        <!-- Navigation Buttons -->
-                        <div class="wizard-navigation">
-                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
-                                <i class="fas fa-arrow-left"></i>
-                                Previous
-                            </button>
-                            <button type="button" class="btn btn-primary" id="nextBtn">
-                                Next
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
+                            <!-- Navigation Buttons -->
+                            <div class="wizard-navigation">
+                                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" id="nextBtn">
+                                    Next
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Stage 4: Emergency Contact -->
                     <div class="wizard-stage" data-stage="4">
-                        <div class="stage-header">
-                            <h2><i class="fas fa-phone-alt"></i> Emergency Contact Information</h2>
-                            <p>Please provide an emergency contact who can be reached if you're unavailable.</p>
-                        </div>
+                        <div class="wizard-card">
+                            <div class="stage-header">
+                                <div class="stage-icon">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div>
+                                    <h2>Emergency Contact Information</h2>
+                                    <p>Please provide an emergency contact who can be reached if you're unavailable.</p>
+                                </div>
+                            </div>
                         
                         <div class="form-section">
                             <div class="form-group inline-checkbox">
@@ -290,25 +329,32 @@
                             </div>
                         </div>
                         
-                        <!-- Navigation Buttons -->
-                        <div class="wizard-navigation">
-                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
-                                <i class="fas fa-arrow-left"></i>
-                                Previous
-                            </button>
-                            <button type="button" class="btn btn-primary" id="nextBtn">
-                                Next
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
+                            <!-- Navigation Buttons -->
+                            <div class="wizard-navigation">
+                                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" id="nextBtn">
+                                    Next
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Stage 5: Consent & Agreements -->
                     <div class="wizard-stage" data-stage="5">
-                        <div class="stage-header">
-                            <h2><i class="fas fa-shield-alt"></i> Liability Release Agreement</h2>
-                            <p>Please read and agree to our liability release terms before completing registration.</p>
-                        </div>
+                        <div class="wizard-card">
+                            <div class="stage-header">
+                                <div class="stage-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div>
+                                    <h2>Liability Release Agreement</h2>
+                                    <p>Please read and agree to our liability release terms before completing registration.</p>
+                                </div>
+                            </div>
                         
                         <div class="consent-container">
                             <div class="consent-section">
@@ -339,19 +385,21 @@
                             </div>
                         </div>
                         
-                        <!-- Navigation Buttons -->
-                        <div class="wizard-navigation">
-                            <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
-                                <i class="fas fa-arrow-left"></i>
-                                Previous
-                            </button>
-                            <button type="submit" class="btn btn-success" id="submitBtn" disabled>
-                                <i class="fas fa-check"></i>
-                                Complete Registration
-                            </button>
+                            <!-- Navigation Buttons -->
+                            <div class="wizard-navigation">
+                                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Previous
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                                    <i class="fas fa-check"></i>
+                                    Complete Registration
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
+                </div>
             </div>
         </div>
     </section>

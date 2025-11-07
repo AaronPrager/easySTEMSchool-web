@@ -141,18 +141,119 @@ router.put('/lessons/:id', async (req, res) => {
   try {
     await database.init();
     const lessonData = req.body;
-    const result = await database.updateLesson(req.params.id, lessonData);
     
-    if (result.changes > 0) {
-      res.json({
+    // Get the existing lesson to check if it's being converted to recurring
+    const existingLesson = await database.getLessonById(req.params.id);
+    
+    if (!existingLesson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lesson not found'
+      });
+    }
+    
+    // If converting a non-recurring lesson to recurring
+    if (!existingLesson.is_recurring && lessonData.is_recurring) {
+      // Generate a unique recurrence group ID
+      const recurrenceGroupId = `group_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Update the existing lesson with the recurrence group ID
+      const updatedLessonData = {
+        ...lessonData,
+        recurrence_group_id: recurrenceGroupId,
+        occurrence_number: 1,
+        total_occurrences: null
+      };
+      
+      const result = await database.updateLesson(req.params.id, updatedLessonData);
+      
+      // Calculate future occurrences (only if end_date is provided)
+      if (lessonData.end_date && lessonData.end_date.trim() !== '') {
+        const startDate = new Date(lessonData.start_time);
+        const endDate = new Date(lessonData.end_date);
+        const recurrenceType = lessonData.recurrence_type || 'weekly';
+        
+        let currentDate = new Date(startDate);
+        let occurrenceNumber = 1;
+        
+        // Skip the first occurrence (already exists)
+        switch (recurrenceType) {
+          case 'weekly':
+            currentDate.setDate(currentDate.getDate() + 7);
+            break;
+          case 'biweekly':
+            currentDate.setDate(currentDate.getDate() + 14);
+            break;
+          case 'monthly':
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            break;
+        }
+        
+        // Create future occurrences
+        while (currentDate <= endDate) {
+          const startTime = new Date(currentDate);
+          const duration = new Date(lessonData.end_time).getTime() - new Date(lessonData.start_time).getTime();
+          const endTime = new Date(startTime.getTime() + duration);
+          
+          occurrenceNumber++;
+          
+          const newLesson = {
+            student_id: existingLesson.student_id,
+            student_name: existingLesson.student_name,
+            title: lessonData.title,
+            subject: lessonData.subject,
+            start_time: startTime.toISOString(),
+            end_time: endTime.toISOString(),
+            duration: lessonData.duration,
+            location: lessonData.location,
+            description: lessonData.description,
+            notes: lessonData.notes,
+            connection_link: lessonData.connection_link,
+            reminder: lessonData.reminder || 0,
+            is_recurring: true,
+            recurrence_type: recurrenceType,
+            occurrence_number: occurrenceNumber,
+            total_occurrences: null,
+            end_date: lessonData.end_date,
+            recurrence_group_id: recurrenceGroupId
+          };
+          
+          await database.saveLesson(newLesson);
+          
+          // Calculate next occurrence date
+          switch (recurrenceType) {
+            case 'weekly':
+              currentDate.setDate(currentDate.getDate() + 7);
+              break;
+            case 'biweekly':
+              currentDate.setDate(currentDate.getDate() + 14);
+              break;
+            case 'monthly':
+              currentDate.setMonth(currentDate.getMonth() + 1);
+              break;
+          }
+        }
+      }
+      
+      return res.json({
         success: true,
         message: 'Lesson updated successfully'
       });
     } else {
-      res.status(404).json({
-        success: false,
-        message: 'Lesson not found'
-      });
+      // Regular update
+      const result = await database.updateLesson(req.params.id, lessonData);
+      
+      if (result.changes > 0) {
+        res.json({
+          success: true,
+          message: 'Lesson updated successfully'
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'Lesson not found'
+        });
+      }
     }
   } catch (error) {
     console.error('Error updating lesson:', error);

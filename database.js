@@ -61,23 +61,23 @@ class Database {
                 registration_id TEXT UNIQUE NOT NULL,
                 student_first_name TEXT NOT NULL,
                 student_last_name TEXT NOT NULL,
-                student_phone TEXT NOT NULL,
+                student_phone TEXT,
                 student_email TEXT,
-                student_date_of_birth TEXT NOT NULL,
-                student_grade TEXT NOT NULL,
-                school_name TEXT NOT NULL,
-                parent_full_name TEXT NOT NULL,
-                parent_email TEXT NOT NULL,
-                parent_phone TEXT NOT NULL,
-                parent_address TEXT NOT NULL,
-                same_as_parent BOOLEAN NOT NULL,
+                student_date_of_birth TEXT,
+                student_grade TEXT,
+                school_name TEXT,
+                parent_full_name TEXT,
+                parent_email TEXT,
+                parent_phone TEXT,
+                parent_address TEXT,
+                same_as_parent BOOLEAN DEFAULT 0,
                 emergency_name TEXT,
                 emergency_relationship TEXT,
                 emergency_phone TEXT,
                 emergency_email TEXT,
                 emergency_address TEXT,
-                subjects TEXT NOT NULL,
-                specific_goals TEXT NOT NULL,
+                subjects TEXT,
+                specific_goals TEXT,
                 learning_difficulties TEXT,
                 additional_comments TEXT,
                 how_did_you_hear TEXT,
@@ -121,6 +121,8 @@ class Database {
         
         // Check and update table schema if needed
         this.updateTableSchema();
+        // Migrate existing table if needed
+        this.migrateTableSchema();
     }
 
     updateTableSchema() {
@@ -134,17 +136,17 @@ class Database {
             const columnNames = columns.map(col => col.name);
             console.log('Current columns:', columnNames);
             
-            // Add missing columns
+            // Add missing columns (if they don't exist)
             const requiredColumns = [
-                { name: 'student_date_of_birth', type: 'TEXT NOT NULL DEFAULT ""' },
+                { name: 'student_date_of_birth', type: 'TEXT' },
                 { name: 'student_email', type: 'TEXT' },
-                { name: 'same_as_parent', type: 'BOOLEAN NOT NULL DEFAULT 0' },
+                { name: 'same_as_parent', type: 'BOOLEAN DEFAULT 0' },
                 { name: 'emergency_name', type: 'TEXT' },
                 { name: 'emergency_relationship', type: 'TEXT' },
                 { name: 'emergency_phone', type: 'TEXT' },
                 { name: 'emergency_email', type: 'TEXT' },
                 { name: 'emergency_address', type: 'TEXT' },
-                { name: 'specific_goals', type: 'TEXT NOT NULL DEFAULT ""' },
+                { name: 'specific_goals', type: 'TEXT' },
                 { name: 'learning_difficulties', type: 'TEXT' },
                 { name: 'additional_comments', type: 'TEXT' },
                 { name: 'how_did_you_hear', type: 'TEXT' },
@@ -154,7 +156,102 @@ class Database {
             requiredColumns.forEach(col => {
                 if (!columnNames.includes(col.name)) {
                     console.log(`Adding missing column: ${col.name}`);
-                    this.db.exec(`ALTER TABLE registrations ADD COLUMN ${col.name} ${col.type}`);
+                    try {
+                        this.db.exec(`ALTER TABLE registrations ADD COLUMN ${col.name} ${col.type}`);
+                    } catch (e) {
+                        console.error(`Error adding column ${col.name}:`, e.message);
+                    }
+                }
+            });
+        });
+    }
+
+    migrateTableSchema() {
+        // Check if table has old NOT NULL constraints on optional fields
+        this.db.all("PRAGMA table_info(registrations)", (err, columns) => {
+            if (err) {
+                console.error('Error getting table info for migration:', err);
+                return;
+            }
+            
+            // Check if specific_goals has NOT NULL constraint (old schema)
+            const specificGoalsCol = columns.find(col => col.name === 'specific_goals');
+            if (specificGoalsCol && specificGoalsCol.notnull === 1) {
+                console.log('Migrating registrations table to allow nullable fields...');
+                this.migrateToNullableSchema();
+            }
+        });
+    }
+
+    migrateToNullableSchema() {
+        // SQLite doesn't support ALTER COLUMN, so we need to recreate the table
+        this.db.serialize(() => {
+            this.db.run('BEGIN TRANSACTION');
+            
+            // Create new table with correct schema
+            this.db.exec(`
+                CREATE TABLE registrations_new (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    registration_id TEXT UNIQUE NOT NULL,
+                    student_first_name TEXT NOT NULL,
+                    student_last_name TEXT NOT NULL,
+                    student_phone TEXT,
+                    student_email TEXT,
+                    student_date_of_birth TEXT,
+                    student_grade TEXT,
+                    school_name TEXT,
+                    parent_full_name TEXT,
+                    parent_email TEXT,
+                    parent_phone TEXT,
+                    parent_address TEXT,
+                    same_as_parent BOOLEAN DEFAULT 0,
+                    emergency_name TEXT,
+                    emergency_relationship TEXT,
+                    emergency_phone TEXT,
+                    emergency_email TEXT,
+                    emergency_address TEXT,
+                    subjects TEXT,
+                    specific_goals TEXT,
+                    learning_difficulties TEXT,
+                    additional_comments TEXT,
+                    how_did_you_hear TEXT,
+                    liability_release BOOLEAN NOT NULL,
+                    registration_date TEXT NOT NULL,
+                    user_agent TEXT,
+                    ip_address TEXT,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+            
+            // Copy data from old table (with defaults for null fields)
+            this.db.exec(`
+                INSERT INTO registrations_new 
+                SELECT 
+                    id, registration_id, student_first_name, student_last_name,
+                    student_phone, student_email, student_date_of_birth, student_grade, school_name,
+                    parent_full_name, parent_email, parent_phone, parent_address,
+                    COALESCE(same_as_parent, 0) as same_as_parent,
+                    emergency_name, emergency_relationship, emergency_phone, emergency_email, emergency_address,
+                    subjects, COALESCE(specific_goals, '') as specific_goals,
+                    learning_difficulties, additional_comments, how_did_you_hear,
+                    liability_release, registration_date, user_agent, ip_address,
+                    created_at, updated_at
+                FROM registrations
+            `);
+            
+            // Drop old table
+            this.db.run('DROP TABLE registrations');
+            
+            // Rename new table
+            this.db.run('ALTER TABLE registrations_new RENAME TO registrations');
+            
+            this.db.run('COMMIT', (err) => {
+                if (err) {
+                    console.error('Error migrating table:', err);
+                    this.db.run('ROLLBACK');
+                } else {
+                    console.log('Successfully migrated registrations table to nullable schema');
                 }
             });
         });
@@ -188,23 +285,23 @@ class Database {
                 registrationId,
                 student.firstName,
                 student.lastName,
-                student.phone,
+                student.phone || null,
                 student.email || null,
-                student.dateOfBirth,
-                student.grade,
-                student.schoolName,
-                parent.fullName,
-                parent.email,
-                parent.phone,
-                parent.address,
+                student.dateOfBirth || null,
+                student.grade || null,
+                student.schoolName || null,
+                parent.fullName || null,
+                parent.email || null,
+                parent.phone || null,
+                parent.address || null,
                 emergencyContact.sameAsParent ? 1 : 0,
                 emergencyContact.name || null,
                 emergencyContact.relationship || null,
                 emergencyContact.phone || null,
                 emergencyContact.email || null,
                 emergencyContact.address || null,
-                additionalInfo.subjects,
-                additionalInfo.specificGoals,
+                additionalInfo.subjects || null,
+                additionalInfo.specificGoals || null,
                 additionalInfo.learningDifficulties || null,
                 additionalInfo.additionalComments || null,
                 additionalInfo.howDidYouHear || null,

@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
       userAgent
     } = req.body;
 
-    // Validate required fields
+    // Validate required fields - all fields except student email
     const requiredFields = {
       studentFirstName,
       studentLastName,
@@ -46,8 +46,11 @@ router.post('/', async (req, res) => {
       parentEmail,
       parentPhone,
       parentAddress,
-      sameAsParent,
+      subjects,
       specificGoals,
+      emergencyName,
+      emergencyRelationship,
+      emergencyPhone,
       liabilityRelease
     };
 
@@ -83,23 +86,27 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Validate phone format
+    // Validate phone format - only if provided
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    const cleanParentPhone = parentPhone.replace(/[\s\-\(\)]/g, '');
-    
-    if (!phoneRegex.test(cleanParentPhone)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid parent phone number format'
-      });
-    }
 
+    // Optional phone validation - only validate if provided
     if (emergencyPhone && sameAsParent !== '1' && sameAsParent !== true) {
       const cleanEmergencyPhone = emergencyPhone.replace(/[\s\-\(\)]/g, '');
-      if (!phoneRegex.test(cleanEmergencyPhone)) {
+      if (cleanEmergencyPhone && !phoneRegex.test(cleanEmergencyPhone)) {
         return res.status(400).json({
           success: false,
           message: 'Invalid emergency contact phone number format'
+        });
+      }
+    }
+    
+    // Optional parent phone validation - only validate if provided
+    if (parentPhone) {
+      const cleanParentPhone = parentPhone.replace(/[\s\-\(\)]/g, '');
+      if (!phoneRegex.test(cleanParentPhone)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid parent phone number format'
         });
       }
     }
@@ -137,15 +144,15 @@ router.post('/', async (req, res) => {
       },
       emergencyContact: {
         sameAsParent: sameAsParent === '1' || sameAsParent === true,
-        name: emergencyName ? emergencyName.trim() : null,
-        relationship: emergencyRelationship ? emergencyRelationship.trim() : null,
-        phone: emergencyPhone ? emergencyPhone.trim() : null,
+        name: emergencyName.trim(),
+        relationship: emergencyRelationship.trim(),
+        phone: emergencyPhone.trim(),
         email: emergencyEmail ? emergencyEmail.trim().toLowerCase() : null,
         address: emergencyAddress ? emergencyAddress.trim() : null
       },
       additionalInfo: {
-        subjects: subjects ? subjects.trim() : '',
-        specificGoals: specificGoals ? specificGoals.trim() : null,
+        subjects: subjects.trim(),
+        specificGoals: specificGoals.trim(),
         learningDifficulties: learningDifficulties ? learningDifficulties.trim() : null,
         additionalComments: additionalComments ? additionalComments.trim() : null,
         howDidYouHear: howDidYouHear
@@ -170,65 +177,55 @@ router.post('/', async (req, res) => {
       }
     });
 
-    // Email content for admin notification
+    // Email content for admin notification - simplified key:value format
+    const agreementsText = registrationData.agreements.liabilityRelease ? 'Agreed' : 'Not agreed';
+    
     const adminMailOptions = {
       from: process.env.EMAIL_USER,
       to: 'easystemschool@gmail.com',
       subject: `New Student Registration - ${registrationId}`,
-      html: `
-        <h2>New Student Registration</h2>
-        <p><strong>Registration ID:</strong> ${registrationId}</p>
-        <p><strong>Registration Date:</strong> ${new Date().toLocaleString()}</p>
-        
-        <h3>Parent/Guardian Information</h3>
-        <p><strong>Name:</strong> ${registrationData.parent.fullName}</p>
-        <p><strong>Email:</strong> ${registrationData.parent.email}</p>
-        <p><strong>Phone:</strong> ${registrationData.parent.phone}</p>
-        <p><strong>Address:</strong> ${registrationData.parent.address}</p>
-        
-        <h3>Emergency Contact Information</h3>
-        <p><strong>Same as Parent:</strong> ${registrationData.emergencyContact.sameAsParent ? 'Yes' : 'No'}</p>
-        ${!registrationData.emergencyContact.sameAsParent ? `
-          <p><strong>Name:</strong> ${registrationData.emergencyContact.name || 'Not provided'}</p>
-          <p><strong>Relationship:</strong> ${registrationData.emergencyContact.relationship || 'Not provided'}</p>
-          <p><strong>Phone:</strong> ${registrationData.emergencyContact.phone || 'Not provided'}</p>
-          <p><strong>Email:</strong> ${registrationData.emergencyContact.email || 'Not provided'}</p>
-          <p><strong>Address:</strong> ${registrationData.emergencyContact.address || 'Not provided'}</p>
-        ` : ''}
-        
-        <h3>Student Information</h3>
-        <p><strong>Name:</strong> ${registrationData.student.firstName} ${registrationData.student.lastName}</p>
-        <p><strong>Phone:</strong> ${registrationData.student.phone}</p>
-        <p><strong>Email:</strong> ${registrationData.student.email || 'Not provided'}</p>
-        <p><strong>Date of Birth:</strong> ${registrationData.student.dateOfBirth}</p>
-        <p><strong>Grade:</strong> ${registrationData.student.grade}</p>
-        <p><strong>School:</strong> ${registrationData.student.schoolName}</p>
-        
-        <h3>Academic Needs</h3>
-        <p><strong>Subjects:</strong> ${registrationData.additionalInfo.subjects}</p>
-        <p><strong>Specific Goals:</strong></p>
-        <p>${registrationData.additionalInfo.specificGoals ? registrationData.additionalInfo.specificGoals.replace(/\n/g, '<br>') : 'Not provided'}</p>
-        ${registrationData.additionalInfo.learningDifficulties ? `<p><strong>Learning Difficulties/Special Needs:</strong></p><p>${registrationData.additionalInfo.learningDifficulties.replace(/\n/g, '<br>')}</p>` : ''}
-        ${registrationData.additionalInfo.additionalComments ? `<p><strong>Additional Comments:</strong></p><p>${registrationData.additionalInfo.additionalComments.replace(/\n/g, '<br>')}</p>` : ''}
-        <p><strong>How did you hear about us:</strong> ${registrationData.additionalInfo.howDidYouHear}</p>
-        
-        <h3>Agreements</h3>
-        <p><strong>Privacy Policy:</strong> ${registrationData.agreements.privacy ? 'Agreed' : 'Not agreed'}</p>
-        <p><strong>Safety & Conduct:</strong> ${registrationData.agreements.safety ? 'Agreed' : 'Not agreed'}</p>
-        <p><strong>Services Agreement:</strong> ${registrationData.agreements.services ? 'Agreed' : 'Not agreed'}</p>
-        <p><strong>Communication Consent:</strong> ${registrationData.agreements.communication ? 'Agreed' : 'Not agreed'}</p>
-        
-        <hr>
-        <p><em>This registration was submitted through the Easy STEM School website.</em></p>
-        <p><strong>IP Address:</strong> ${registrationData.metadata.ipAddress}</p>
-      `
+      text: `Registration Date: ${new Date().toLocaleString()}
+
+Parent/Guardian Information
+Name: ${registrationData.parent.fullName || ''}
+Email: ${registrationData.parent.email || ''}
+Phone: ${registrationData.parent.phone || ''}
+Address: ${registrationData.parent.address || ''}
+
+Emergency Contact Information
+Same as Parent: ${registrationData.emergencyContact.sameAsParent ? 'Yes' : 'No'}${!registrationData.emergencyContact.sameAsParent ? `
+Name: ${registrationData.emergencyContact.name || ''}
+Relationship: ${registrationData.emergencyContact.relationship || ''}
+Phone: ${registrationData.emergencyContact.phone || ''}
+Email: ${registrationData.emergencyContact.email || ''}
+Address: ${registrationData.emergencyContact.address || ''}` : ''}
+
+Student Information
+Name: ${registrationData.student.firstName} ${registrationData.student.lastName}
+Phone: ${registrationData.student.phone || ''}
+Email: ${registrationData.student.email || ''}
+Date of Birth: ${registrationData.student.dateOfBirth || ''}
+Grade: ${registrationData.student.grade || ''}
+School: ${registrationData.student.schoolName || ''}
+
+Academic Needs
+Subjects: ${registrationData.additionalInfo.subjects || ''}
+Specific Goals: ${registrationData.additionalInfo.specificGoals ? registrationData.additionalInfo.specificGoals.replace(/\n/g, ' ') : ''}
+Learning Difficulties/Special Needs: ${registrationData.additionalInfo.learningDifficulties ? registrationData.additionalInfo.learningDifficulties.replace(/\n/g, ' ') : ''}
+Additional Comments: ${registrationData.additionalInfo.additionalComments ? registrationData.additionalInfo.additionalComments.replace(/\n/g, ' ') : ''}
+How did you hear about us: ${registrationData.additionalInfo.howDidYouHear || ''}
+
+Agreements: ${agreementsText}
+`
     };
 
-    // Email content for parent confirmation
-    const confirmationMailOptions = {
-      from: process.env.EMAIL_USER,
-      to: registrationData.parent.email,
-      subject: 'Registration Confirmation - Easy STEM School',
+    // Email content for parent confirmation - only send if email is provided
+    let confirmationMailOptions = null;
+    if (registrationData.parent.email) {
+      confirmationMailOptions = {
+        from: process.env.EMAIL_USER,
+        to: registrationData.parent.email,
+        subject: 'Registration Confirmation - Easy STEM School',
       html: `
         <h2>Registration Confirmation</h2>
         <p>Dear ${registrationData.parent.fullName},</p>
@@ -259,7 +256,8 @@ router.post('/', async (req, res) => {
         <hr>
         <p><em>This is an automated confirmation email. Please do not reply to this email.</em></p>
       `
-    };
+      };
+    }
 
     // Save to database
     const dbResult = await database.saveRegistration(registrationData);
@@ -267,7 +265,9 @@ router.post('/', async (req, res) => {
 
     // Send emails
     await transporter.sendMail(adminMailOptions);
-    await transporter.sendMail(confirmationMailOptions);
+    if (confirmationMailOptions) {
+      await transporter.sendMail(confirmationMailOptions);
+    }
 
     // Log registration data
     console.log('New Registration Received:', JSON.stringify(registrationData, null, 2));
@@ -279,9 +279,9 @@ router.post('/', async (req, res) => {
       registrationId: registrationId,
       databaseId: dbResult.id,
       data: {
-        parentName: `${registrationData.parent.firstName} ${registrationData.parent.lastName}`,
+        parentName: registrationData.parent.fullName || 'Not provided',
         studentName: `${registrationData.student.firstName} ${registrationData.student.lastName}`,
-        email: registrationData.parent.email,
+        email: registrationData.parent.email || 'Not provided',
         registrationDate: registrationData.metadata.registrationDate
       }
     });
