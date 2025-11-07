@@ -7,45 +7,51 @@ export default async function handler(req, res) {
 
   try {
     const {
-      parentFirstName,
-      parentLastName,
-      parentEmail,
-      parentPhone,
       studentFirstName,
       studentLastName,
-      studentEmail,
       studentPhone,
+      studentEmail,
+      studentDateOfBirth,
       studentGrade,
+      schoolName,
+      parentFullName,
+      parentEmail,
+      parentPhone,
+      parentAddress,
+      sameAsParent,
       emergencyName,
       emergencyRelationship,
       emergencyPhone,
       emergencyEmail,
+      emergencyAddress,
       subjects,
-      learningGoals,
-      previousExperience,
-      privacyAgreement,
-      safetyAgreement,
-      servicesAgreement,
-      communicationConsent,
+      specificGoals,
+      learningDifficulties,
+      additionalComments,
+      howDidYouHear,
+      liabilityRelease,
       registrationDate,
       userAgent
     } = req.body;
 
-    // Validate required fields
+    // Validate required fields - all fields except student email
     const requiredFields = {
-      parentFirstName,
-      parentLastName,
-      parentEmail,
-      parentPhone,
       studentFirstName,
       studentLastName,
+      studentPhone,
+      studentDateOfBirth,
+      studentGrade,
+      schoolName,
+      parentFullName,
+      parentEmail,
+      parentPhone,
+      parentAddress,
+      subjects,
+      specificGoals,
       emergencyName,
       emergencyRelationship,
       emergencyPhone,
-      privacyAgreement,
-      safetyAgreement,
-      servicesAgreement,
-      communicationConsent
+      liabilityRelease
     };
 
     const missingFields = Object.keys(requiredFields).filter(field => !requiredFields[field]);
@@ -57,9 +63,9 @@ export default async function handler(req, res) {
       });
     }
 
-    // Validate email format
+    // Validate email format - only if provided
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(parentEmail)) {
+    if (parentEmail && !emailRegex.test(parentEmail)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid parent email format'
@@ -80,23 +86,29 @@ export default async function handler(req, res) {
       });
     }
 
-    // Validate phone format
+    // Validate phone format - only if provided
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    const cleanParentPhone = parentPhone.replace(/[\s\-\(\)]/g, '');
-    const cleanEmergencyPhone = emergencyPhone.replace(/[\s\-\(\)]/g, '');
-    
-    if (!phoneRegex.test(cleanParentPhone)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid parent phone number format'
-      });
-    }
 
-    if (!phoneRegex.test(cleanEmergencyPhone)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid emergency contact phone number format'
-      });
+    // Optional phone validation - only validate if provided
+    if (emergencyPhone && sameAsParent !== '1' && sameAsParent !== true) {
+      const cleanEmergencyPhone = emergencyPhone.replace(/[\s\-\(\)]/g, '');
+      if (cleanEmergencyPhone && !phoneRegex.test(cleanEmergencyPhone)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid emergency contact phone number format'
+        });
+      }
+    }
+    
+    // Optional parent phone validation - only validate if provided
+    if (parentPhone) {
+      const cleanParentPhone = parentPhone.replace(/[\s\-\(\)]/g, '');
+      if (!phoneRegex.test(cleanParentPhone)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid parent phone number format'
+        });
+      }
     }
 
     if (studentPhone) {
@@ -115,46 +127,49 @@ export default async function handler(req, res) {
     // Prepare registration data
     const registrationData = {
       registrationId,
-      parent: {
-        firstName: parentFirstName.trim(),
-        lastName: parentLastName.trim(),
-        email: parentEmail.trim().toLowerCase(),
-        phone: parentPhone.trim()
-      },
       student: {
         firstName: studentFirstName.trim(),
         lastName: studentLastName.trim(),
+        phone: studentPhone.trim(),
         email: studentEmail ? studentEmail.trim().toLowerCase() : null,
-        phone: studentPhone ? studentPhone.trim() : null,
-        grade: studentGrade || null
+        dateOfBirth: studentDateOfBirth,
+        grade: studentGrade,
+        schoolName: schoolName.trim()
+      },
+      parent: {
+        fullName: parentFullName.trim(),
+        email: parentEmail ? parentEmail.trim().toLowerCase() : null,
+        phone: parentPhone.trim(),
+        address: parentAddress.trim()
       },
       emergencyContact: {
+        sameAsParent: sameAsParent === '1' || sameAsParent === true,
         name: emergencyName.trim(),
-        relationship: emergencyRelationship,
+        relationship: emergencyRelationship.trim(),
         phone: emergencyPhone.trim(),
-        email: emergencyEmail ? emergencyEmail.trim().toLowerCase() : null
+        email: emergencyEmail ? emergencyEmail.trim().toLowerCase() : null,
+        address: emergencyAddress ? emergencyAddress.trim() : null
       },
       additionalInfo: {
-        subjects: Array.isArray(subjects) ? subjects : (subjects ? [subjects] : []),
-        learningGoals: learningGoals ? learningGoals.trim() : null,
-        previousExperience: previousExperience ? previousExperience.trim() : null
+        subjects: subjects.trim(),
+        specificGoals: specificGoals.trim(),
+        learningDifficulties: learningDifficulties ? learningDifficulties.trim() : null,
+        additionalComments: additionalComments ? additionalComments.trim() : null,
+        howDidYouHear: howDidYouHear
       },
       agreements: {
-        privacy: privacyAgreement,
-        safety: safetyAgreement,
-        services: servicesAgreement,
-        communication: communicationConsent
+        liabilityRelease: liabilityRelease
       },
       metadata: {
         registrationDate: registrationDate || new Date().toISOString(),
         userAgent: userAgent,
-        ipAddress: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+        ipAddress: req.headers['x-forwarded-for'] || req.connection?.remoteAddress,
         timestamp: new Date().toISOString()
       }
     };
 
     // Create transporter using Gmail SMTP
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
@@ -162,91 +177,93 @@ export default async function handler(req, res) {
       }
     });
 
-    // Email content for admin notification
+    // Email content for admin notification - simplified key:value format
+    const agreementsText = registrationData.agreements.liabilityRelease ? 'Agreed' : 'Not agreed';
+    
     const adminMailOptions = {
       from: process.env.EMAIL_USER,
       to: 'easystemschool@gmail.com',
       subject: `New Student Registration - ${registrationId}`,
-      html: `
-        <h2>New Student Registration</h2>
-        <p><strong>Registration ID:</strong> ${registrationId}</p>
-        <p><strong>Registration Date:</strong> ${new Date().toLocaleString()}</p>
-        
-        <h3>Parent/Guardian Information</h3>
-        <p><strong>Name:</strong> ${registrationData.parent.firstName} ${registrationData.parent.lastName}</p>
-        <p><strong>Email:</strong> ${registrationData.parent.email}</p>
-        <p><strong>Phone:</strong> ${registrationData.parent.phone}</p>
-        
-        <h3>Student Information</h3>
-        <p><strong>Name:</strong> ${registrationData.student.firstName} ${registrationData.student.lastName}</p>
-        <p><strong>Email:</strong> ${registrationData.student.email || 'Not provided'}</p>
-        <p><strong>Phone:</strong> ${registrationData.student.phone || 'Not provided'}</p>
-        <p><strong>Grade Level:</strong> ${registrationData.student.grade || 'Not specified'}</p>
-        
-        <h3>Emergency Contact</h3>
-        <p><strong>Name:</strong> ${registrationData.emergencyContact.name}</p>
-        <p><strong>Relationship:</strong> ${registrationData.emergencyContact.relationship}</p>
-        <p><strong>Phone:</strong> ${registrationData.emergencyContact.phone}</p>
-        <p><strong>Email:</strong> ${registrationData.emergencyContact.email || 'Not provided'}</p>
-        
-        <h3>Additional Information</h3>
-        <p><strong>Subjects of Interest:</strong> ${registrationData.additionalInfo.subjects.join(', ') || 'None selected'}</p>
-        <p><strong>Learning Goals:</strong></p>
-        <p>${registrationData.additionalInfo.learningGoals ? registrationData.additionalInfo.learningGoals.replace(/\n/g, '<br>') : 'Not provided'}</p>
-        <p><strong>Previous Experience:</strong></p>
-        <p>${registrationData.additionalInfo.previousExperience ? registrationData.additionalInfo.previousExperience.replace(/\n/g, '<br>') : 'Not provided'}</p>
-        
-        <h3>Agreements</h3>
-        <p><strong>Privacy Policy:</strong> ${registrationData.agreements.privacy ? 'Agreed' : 'Not agreed'}</p>
-        <p><strong>Safety & Conduct:</strong> ${registrationData.agreements.safety ? 'Agreed' : 'Not agreed'}</p>
-        <p><strong>Services Agreement:</strong> ${registrationData.agreements.services ? 'Agreed' : 'Not agreed'}</p>
-        <p><strong>Communication Consent:</strong> ${registrationData.agreements.communication ? 'Agreed' : 'Not agreed'}</p>
-        
-        <hr>
-        <p><em>This registration was submitted through the Easy STEM School website.</em></p>
-      `
+      text: `Registration Date: ${new Date().toLocaleString()}
+
+Parent/Guardian Information
+Name: ${registrationData.parent.fullName || ''}
+Email: ${registrationData.parent.email || ''}
+Phone: ${registrationData.parent.phone || ''}
+Address: ${registrationData.parent.address || ''}
+
+Emergency Contact Information
+Same as Parent: ${registrationData.emergencyContact.sameAsParent ? 'Yes' : 'No'}${!registrationData.emergencyContact.sameAsParent ? `
+Name: ${registrationData.emergencyContact.name || ''}
+Relationship: ${registrationData.emergencyContact.relationship || ''}
+Phone: ${registrationData.emergencyContact.phone || ''}
+Email: ${registrationData.emergencyContact.email || ''}
+Address: ${registrationData.emergencyContact.address || ''}` : ''}
+
+Student Information
+Name: ${registrationData.student.firstName} ${registrationData.student.lastName}
+Phone: ${registrationData.student.phone || ''}
+Email: ${registrationData.student.email || ''}
+Date of Birth: ${registrationData.student.dateOfBirth || ''}
+Grade: ${registrationData.student.grade || ''}
+School: ${registrationData.student.schoolName || ''}
+
+Academic Needs
+Subjects: ${registrationData.additionalInfo.subjects || ''}
+Specific Goals: ${registrationData.additionalInfo.specificGoals ? registrationData.additionalInfo.specificGoals.replace(/\n/g, ' ') : ''}
+Learning Difficulties/Special Needs: ${registrationData.additionalInfo.learningDifficulties ? registrationData.additionalInfo.learningDifficulties.replace(/\n/g, ' ') : ''}
+Additional Comments: ${registrationData.additionalInfo.additionalComments ? registrationData.additionalInfo.additionalComments.replace(/\n/g, ' ') : ''}
+How did you hear about us: ${registrationData.additionalInfo.howDidYouHear || ''}
+
+Agreements: ${agreementsText}
+`
     };
 
-    // Email content for parent confirmation
-    const confirmationMailOptions = {
-      from: process.env.EMAIL_USER,
-      to: registrationData.parent.email,
-      subject: 'Registration Confirmation - Easy STEM School',
-      html: `
-        <h2>Registration Confirmation</h2>
-        <p>Dear ${registrationData.parent.firstName} ${registrationData.parent.lastName},</p>
-        
-        <p>Thank you for registering your child, ${registrationData.student.firstName} ${registrationData.student.lastName}, with Easy STEM School!</p>
-        
-        <p><strong>Registration ID:</strong> ${registrationId}</p>
-        <p><strong>Registration Date:</strong> ${new Date().toLocaleString()}</p>
-        
-        <h3>What Happens Next?</h3>
-        <ol>
-          <li>We'll review your registration within 24 hours</li>
-          <li>Our team will contact you to discuss your child's specific needs</li>
-          <li>We'll create a personalized learning plan tailored to your child</li>
-          <li>We'll schedule your first tutoring session</li>
-        </ol>
-        
-        <h3>Contact Information</h3>
-        <p>If you have any questions, please don't hesitate to contact us:</p>
-        <p><strong>Phone:</strong> 650-224-8014</p>
-        <p><strong>Email:</strong> easystemschool@gmail.com</p>
-        
-        <p>We're excited to work with ${registrationData.student.firstName} and help them achieve their academic goals!</p>
-        
-        <p>Best regards,<br>
-        The Easy STEM School Team</p>
-        
-        <hr>
-        <p><em>This is an automated confirmation email. Please do not reply to this email.</em></p>
-      `
-    };
+    // Email content for parent confirmation - only send if email is provided
+    let confirmationMailOptions = null;
+    if (registrationData.parent.email) {
+      confirmationMailOptions = {
+        from: process.env.EMAIL_USER,
+        to: registrationData.parent.email,
+        subject: 'Registration Confirmation - Easy STEM School',
+        html: `
+          <h2>Registration Confirmation</h2>
+          <p>Dear ${registrationData.parent.fullName},</p>
+          
+          <p>Thank you for registering your child, ${registrationData.student.firstName} ${registrationData.student.lastName}, with Easy STEM School!</p>
+          
+          <p><strong>Registration ID:</strong> ${registrationId}</p>
+          <p><strong>Registration Date:</strong> ${new Date().toLocaleString()}</p>
+          
+          <h3>What Happens Next?</h3>
+          <ol>
+            <li>We'll review your registration within 24 hours</li>
+            <li>Our team will contact you to discuss your child's specific needs</li>
+            <li>We'll create a personalized learning plan tailored to your child</li>
+            <li>We'll schedule your first tutoring session</li>
+          </ol>
+          
+          <h3>Contact Information</h3>
+          <p>If you have any questions, please don't hesitate to contact us:</p>
+          <p><strong>Phone:</strong> 650-224-8014</p>
+          <p><strong>Email:</strong> easystemschool@gmail.com</p>
+          
+          <p>We're excited to work with ${registrationData.student.firstName} and help them achieve their academic goals!</p>
+          
+          <p>Best regards,<br>
+          The Easy STEM School Team</p>
+          
+          <hr>
+          <p><em>This is an automated confirmation email. Please do not reply to this email.</em></p>
+        `
+      };
+    }
 
     // Send emails
     await transporter.sendMail(adminMailOptions);
-    await transporter.sendMail(confirmationMailOptions);
+    if (confirmationMailOptions) {
+      await transporter.sendMail(confirmationMailOptions);
+    }
 
     // Log registration data
     console.log('New Registration Received:', JSON.stringify(registrationData, null, 2));
@@ -257,9 +274,9 @@ export default async function handler(req, res) {
       message: 'Registration submitted successfully',
       registrationId: registrationId,
       data: {
-        parentName: `${registrationData.parent.firstName} ${registrationData.parent.lastName}`,
+        parentName: registrationData.parent.fullName || 'Not provided',
         studentName: `${registrationData.student.firstName} ${registrationData.student.lastName}`,
-        email: registrationData.parent.email,
+        email: registrationData.parent.email || 'Not provided',
         registrationDate: registrationData.metadata.registrationDate
       }
     });
