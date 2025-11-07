@@ -219,51 +219,8 @@ Agreements: ${agreementsText}
 `
     };
 
-    // Email content for parent confirmation - only send if email is provided
-    let confirmationMailOptions = null;
-    if (registrationData.parent.email) {
-      confirmationMailOptions = {
-        from: process.env.EMAIL_USER,
-        to: registrationData.parent.email,
-        subject: 'Registration Confirmation - Easy STEM School',
-        html: `
-          <h2>Registration Confirmation</h2>
-          <p>Dear ${registrationData.parent.fullName},</p>
-          
-          <p>Thank you for registering your child, ${registrationData.student.firstName} ${registrationData.student.lastName}, with Easy STEM School!</p>
-          
-          <p><strong>Registration ID:</strong> ${registrationId}</p>
-          <p><strong>Registration Date:</strong> ${new Date().toLocaleString()}</p>
-          
-          <h3>What Happens Next?</h3>
-          <ol>
-            <li>We'll review your registration within 24 hours</li>
-            <li>Our team will contact you to discuss your child's specific needs</li>
-            <li>We'll create a personalized learning plan tailored to your child</li>
-            <li>We'll schedule your first tutoring session</li>
-          </ol>
-          
-          <h3>Contact Information</h3>
-          <p>If you have any questions, please don't hesitate to contact us:</p>
-          <p><strong>Phone:</strong> 650-224-8014</p>
-          <p><strong>Email:</strong> easystemschool@gmail.com</p>
-          
-          <p>We're excited to work with ${registrationData.student.firstName} and help them achieve their academic goals!</p>
-          
-          <p>Best regards,<br>
-          The Easy STEM School Team</p>
-          
-          <hr>
-          <p><em>This is an automated confirmation email. Please do not reply to this email.</em></p>
-        `
-      };
-    }
-
-    // Send emails
+    // Send admin notification email only
     await transporter.sendMail(adminMailOptions);
-    if (confirmationMailOptions) {
-      await transporter.sendMail(confirmationMailOptions);
-    }
 
     // Log registration data
     console.log('New Registration Received:', JSON.stringify(registrationData, null, 2));
